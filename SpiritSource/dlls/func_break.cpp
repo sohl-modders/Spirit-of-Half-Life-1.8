@@ -409,8 +409,10 @@ void CBreakable::Precache( void )
 // play shard sound when func_breakable takes damage.
 // the more damage, the louder the shard sound.
 
- float CBreakable::CalcRatio(CBaseEntity* plocus, int mode ){//AJH added 'mode' = ratio to return
-	return pev->health/m_iInitialHealth;
+bool CBreakable::CalcNumber(CBaseEntity* plocus, float* OUTresult )
+{
+	*OUTresult = pev->health/m_iInitialHealth;
+	return true;
 }
 
 
@@ -930,7 +932,8 @@ void CBreakable::Die( void )
 	if (m_iRespawnTime == -1)
 	{
 //		ALERT(at_debug,"Waiting for respawn trigger\n");
-		SetUse(&CBreakable:: RespawnUse );	}
+		SetUse(&CBreakable:: RespawnUse );
+	}
 	else if (m_iRespawnTime)
 	{
 //		ALERT(at_debug,"Respawning in %d secs\n",m_iRespawnTime);
@@ -1002,7 +1005,7 @@ public:
 	virtual int		Restore( CRestore &restore );
 
 	inline float MaxSpeed( void ) { return m_maxSpeed; }
-	
+
 	// breakables use an overridden takedamage
 	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
 
@@ -1153,6 +1156,7 @@ void CPushable :: Move( CBaseEntity *pOther, int push )
 	{
 		if ( push && !(pevToucher->button & (IN_FORWARD|IN_USE)) )	// Don't push unless the player is pushing forward and NOT use (pull)
 			return;
+
 		playerTouch = 1;
 	}
 
@@ -1173,19 +1177,41 @@ void CPushable :: Move( CBaseEntity *pOther, int push )
 	else
 		factor = 0.25;
 
-	if (!push) factor = factor*0.5;
+	if (!push)
+		factor = factor*0.5;
 
+	Vector oldVelocity = pev->velocity; //LRC 1.8
 	pev->velocity.x += pevToucher->velocity.x * factor;
 	pev->velocity.y += pevToucher->velocity.y * factor;
-	
+
 	float length = sqrt( pev->velocity.x * pev->velocity.x + pev->velocity.y * pev->velocity.y );
 	if ( push && (length > MaxSpeed()) )
 	{
 		pev->velocity.x = (pev->velocity.x * MaxSpeed() / length );
 		pev->velocity.y = (pev->velocity.y * MaxSpeed() / length );
 	}
+
 	if ( playerTouch )
 	{
+		//LRC 1.8
+		if ( pev->spawnflags & SF_PUSH_NOSUPERPUSH )
+		{
+			// don't accelerate the pushable to be faster than the person pushing it
+			float playerSpeed = pevToucher->velocity.Length2D();
+			Vector playerPushDir = pevToucher->velocity/playerSpeed;
+			playerPushDir.z = 0;
+			float newdot = DotProduct( playerPushDir, pev->velocity ); // how fast we're going with respect to the playerPushDir
+			float olddot = DotProduct( playerPushDir, oldVelocity ); // how fast we used to be going
+			if ( /*olddot <= playerSpeed+0.1f &&*/ newdot > playerSpeed )
+			{
+				// if it wasn't going too fast before, and now it is, adjust to the pusher's actual velocity
+				pev->velocity.x -= playerPushDir.x * newdot;
+				pev->velocity.y -= playerPushDir.y * newdot;
+				pev->velocity.x += pevToucher->velocity.x;
+				pev->velocity.y += pevToucher->velocity.y;
+			}
+		}
+
 		pevToucher->velocity.x = pev->velocity.x;
 		pevToucher->velocity.y = pev->velocity.y;
 		if ( (gpGlobals->time - m_soundTime) > 0.7 )

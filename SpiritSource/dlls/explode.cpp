@@ -25,7 +25,6 @@
 #include "decals.h"
 #include "explode.h"
 #include "locus.h"
-#include "weapons.h"
 
 // Spark Shower
 class CShower : public CBaseEntity
@@ -183,14 +182,29 @@ void CEnvExplosion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 	// draw decal
 	if (! ( pev->spawnflags & SF_ENVEXPLOSION_NODECAL))
 	{
-          	CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-		PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), 0, 0, 0 );
+		if ( RANDOM_FLOAT( 0 , 1 ) < 0.5 )
+		{
+			UTIL_DecalTrace( &tr, DECAL_SCORCH1 );
+		}
+		else
+		{
+			UTIL_DecalTrace( &tr, DECAL_SCORCH2 );
+		}
 	}
 
 	// draw fireball
 	if ( !( pev->spawnflags & SF_ENVEXPLOSION_NOFIREBALL ) )
 	{
-		PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usEfx, 0.0, (float *)&pev->origin, (float *)&g_vecZero, pev->dmg, 0.0, 0, 0, 0, 0 );
+		MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+			WRITE_BYTE( TE_EXPLOSION);
+			WRITE_COORD( pev->origin.x );
+			WRITE_COORD( pev->origin.y );
+			WRITE_COORD( pev->origin.z );
+			WRITE_SHORT( g_sModelIndexFireball );
+			WRITE_BYTE( (BYTE)m_spriteScale ); // scale * 10
+			WRITE_BYTE( 15  ); // framerate
+			WRITE_BYTE( TE_EXPLFLAG_NONE );
+		MESSAGE_END();
 	}
 	else
 	{

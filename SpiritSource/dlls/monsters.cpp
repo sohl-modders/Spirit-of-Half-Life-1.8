@@ -1250,8 +1250,7 @@ void CBaseMonster :: SetActivity ( Activity NewActivity )
 	else
 	{
 		// Not available try to get default anim
-		// ZAEBALO!!!!!
-		ALERT ( at_aiconsole, "%s has no sequence for act:%d\n", STRING(pev->classname), NewActivity );
+		ALERT ( at_debug, "%s has no sequence for act:%d\n", STRING(pev->classname), NewActivity );
 		pev->sequence		= 0;	// Set to the reset anim (if it's there)
 	}
 
@@ -2674,7 +2673,6 @@ void CBaseMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
 
 	case SCRIPT_EVENT_SENTENCE_RND1:		// Play a named sentence group 33% of the time
 		if (RANDOM_LONG(0,2) == 0)
-			break;
 		// fall through...
 	case SCRIPT_EVENT_SENTENCE:			// Play a named sentence group
 		SENTENCEG_PlayRndSz( edict(), pEvent->options, 1.0, ATTN_IDLE, 0, 100 );
@@ -3130,15 +3128,32 @@ BOOL CBaseMonster :: FCheckAITrigger ( void )
 //LRC - to help debug when sequences won't play...
 #define DEBUG_CANTPLAY
 
-int CBaseMonster :: CanPlaySequence( BOOL fDisregardState, int interruptLevel )
+int CBaseMonster :: CanPlaySequence( int interruptFlags )
 {
-	if ( m_pCine || !IsAlive() || m_MonsterState == MONSTERSTATE_PRONE )
+	if ( m_pCine )
 	{
+		if ( interruptFlags & SS_INTERRUPT_SCRIPTS )
+		{
+			return true;
+		}
+		else
+		{
+#ifdef DEBUG_CANTPLAY
+			ALERT(at_debug, "CANTPLAY: Already playing %s \"%s\"!\n", STRING(m_pCine->pev->classname), STRING(m_pCine->pev->targetname));
+#endif
+			return false;
+		}
+	}
+	else if ( !IsAlive() || m_MonsterState == MONSTERSTATE_PRONE )
+	{
+#ifdef DEBUG_CANTPLAY
+		ALERT(at_debug, "CANTPLAY: Dead/Barnacled!\n");
+#endif
 		// monster is already running a scripted sequence or dead!
 		return FALSE;
 	}
 	
-	if ( fDisregardState )
+	if ( interruptFlags & SS_INTERRUPT_ANYSTATE )
 	{
 		// ok to go, no matter what the monster state. (scripted AI)
 		return TRUE;
@@ -3150,10 +3165,13 @@ int CBaseMonster :: CanPlaySequence( BOOL fDisregardState, int interruptLevel )
 		return TRUE;
 	}
 	
-	if ( m_MonsterState == MONSTERSTATE_ALERT && interruptLevel >= SS_INTERRUPT_BY_NAME )
+	if ( m_MonsterState == MONSTERSTATE_ALERT && interruptFlags & SS_INTERRUPT_ALERT )
 		return TRUE;
 
 	// unknown situation
+#ifdef DEBUG_CANTPLAY
+	ALERT(at_debug, "CANTPLAY: non-interruptable state.\n");
+#endif
 	return FALSE;
 }
 
@@ -3222,14 +3240,16 @@ BOOL CBaseMonster :: FindLateralCover ( const Vector &vecThreat, const Vector &v
 
 Vector CBaseMonster :: ShootAtEnemy( const Vector &shootOrigin )
 {
-	CBaseEntity *pEnemy = m_hEnemy;
-
-	if ( pEnemy )
+	if (m_pCine != NULL && m_hTargetEnt != NULL && (m_pCine->m_fTurnType == 1))
 	{
-		return ( (pEnemy->BodyTarget( shootOrigin ) - pEnemy->pev->origin) + m_vecEnemyLKP - shootOrigin ).Normalize();
+		Vector vecDest = ( m_hTargetEnt->pev->absmin + m_hTargetEnt->pev->absmax ) / 2;
+		return ( vecDest - shootOrigin ).Normalize();
 	}
-	else
-		return gpGlobals->v_forward;
+	else if ( m_hEnemy )
+	{
+		return ( (m_hEnemy->BodyTarget( shootOrigin ) - m_hEnemy->pev->origin) + m_vecEnemyLKP - shootOrigin ).Normalize();
+	}
+	else return gpGlobals->v_forward;
 }
 
 

@@ -447,6 +447,8 @@ public:
 	int		m_spriteTexture;
 	int		m_iszSpriteName;
 	int		m_frameStart;
+	int		m_iStartAttachment;
+	int		m_iEndAttachment;
 
 	float	m_radius;
 };
@@ -477,7 +479,9 @@ TYPEDESCRIPTION	CLightning::m_SaveData[] =
 {
 	DEFINE_FIELD( CLightning, m_active, FIELD_INTEGER ),
 	DEFINE_FIELD( CLightning, m_iszStartEntity, FIELD_STRING ),
+	DEFINE_FIELD( CLightning, m_iStartAttachment, FIELD_INTEGER ),
 	DEFINE_FIELD( CLightning, m_iszEndEntity, FIELD_STRING ),
+	DEFINE_FIELD( CLightning, m_iEndAttachment, FIELD_INTEGER ),
 	DEFINE_FIELD( CLightning, m_life, FIELD_FLOAT ),
 	DEFINE_FIELD( CLightning, m_boltWidth, FIELD_INTEGER ),
 	DEFINE_FIELD( CLightning, m_noiseAmplitude, FIELD_INTEGER ),
@@ -574,9 +578,19 @@ void CLightning::KeyValue( KeyValueData *pkvd )
 		m_iszStartEntity = ALLOC_STRING( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
+	else if (FStrEq(pkvd->szKeyName, "LightningStartAttachment"))
+	{
+		m_iStartAttachment = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
 	else if (FStrEq(pkvd->szKeyName, "LightningEnd"))
 	{
 		m_iszEndEntity = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "LightningEndAttachment"))
+	{
+		m_iEndAttachment = atoi( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "life"))
@@ -679,6 +693,7 @@ void CLightning::StrikeUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 
 int IsPointEntity( CBaseEntity *pEnt )
 {
+//	ALERT(at_console, "IsPE: %s, %d\n", STRING(pEnt->pev->classname), pEnt->pev->modelindex);
 	if (pEnt->pev->modelindex && !(pEnt->pev->flags & FL_CUSTOMENTITY)) //LRC- follow (almost) any entity that has a model
 		return 0;
 	else
@@ -721,14 +736,19 @@ void CLightning::StrikeThink( void )
 
 	if ( pStart != NULL && pEnd != NULL )
 	{
+		if ( IsPointEntity( pStart ) || IsPointEntity( pEnd ) )
+		{
+			if ( pev->spawnflags & SF_BEAM_RING)
+			{
+				// don't work
+				//LRC- FIXME: tell the user there's a problem.
+				return;
+			}
+		}
+
 		MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
 			if ( IsPointEntity( pStart ) || IsPointEntity( pEnd ) )
 			{
-				if ( pev->spawnflags & SF_BEAM_RING)
-				{
-					// don't work
-					return;
-				}
 				if ( !IsPointEntity( pEnd ) )	// One point entity must be in pEnd
 				{
 					CBaseEntity *pTemp;
@@ -784,7 +804,8 @@ void CLightning::StrikeThink( void )
 		{
 			TraceResult tr;
 			UTIL_TraceLine( pStart->pev->origin, pEnd->pev->origin, dont_ignore_monsters, NULL, &tr );
-			if (pev->dmg) BeamDamageInstant( &tr, pev->dmg );
+			if (pev->dmg)
+				BeamDamageInstant( &tr, pev->dmg );
 
 			//LRC - tripbeams
 			CBaseEntity* pTrip;
@@ -830,7 +851,7 @@ void CBeam::BeamDamage( TraceResult *ptr )
 		if ( pHit )
 		{
 			if (pev->dmg > 0)
-			{         if(pev->frags == 0)pev->frags = DMG_ENERGYBEAM;
+			{
 				ClearMultiDamage();
 				pHit->TraceAttack( pev, pev->dmg * (gpGlobals->time - pev->dmgtime), (ptr->vecEndPos - pev->origin).Normalize(), ptr, pev->frags );
 				ApplyMultiDamage( pev, pev );
@@ -858,8 +879,11 @@ void CLightning::TripThink( void )
 
 	//ALERT(at_console,"TripThink\n");
 
-	UTIL_TraceLine( GetStartPos(), GetEndPos(), dont_ignore_monsters, NULL, &tr );
-	BeamDamage( &tr );
+	if (pev->dmg != 0)
+	{
+		UTIL_TraceLine( GetStartPos(), GetEndPos(), dont_ignore_monsters, NULL, &tr );
+		BeamDamage( &tr );
+	}
 
 	//LRC - tripbeams
 	if (!FStringNull(pev->target))
@@ -1031,12 +1055,17 @@ void CLightning::BeamUpdatePoints( void )
 		if ( beamType == BEAM_POINTS || beamType == BEAM_HOSE )
 			SetEndPos( pEnd->pev->origin );
 		else
+		{
 			SetEndEntity( ENTINDEX(ENT(pEnd->pev)) );
+			SetEndAttachment(m_iEndAttachment);
+		}
 	}
 	else
 	{
 		SetStartEntity( ENTINDEX(ENT(pStart->pev)) );
+		SetStartAttachment(m_iStartAttachment);
 		SetEndEntity( ENTINDEX(ENT(pEnd->pev)) );
+		SetEndAttachment(m_iEndAttachment);
 	}
 
 	RelinkBeam();
@@ -1159,11 +1188,13 @@ void CLaser::PostSpawn( void )
 	//LRC
 	if ( m_pStartSprite && m_pEndSprite && pev->spawnflags & SF_LASER_INTERPOLATE )
 		EntsInit( m_pStartSprite->entindex(), m_pEndSprite->entindex() );
-	else	PointsInit( pev->origin, pev->origin );
+	else
+		PointsInit( pev->origin, pev->origin );
 
 	if ( pev->targetname && !(pev->spawnflags & SF_BEAM_STARTON) )
 		TurnOff();
-	else	TurnOn();
+	else
+		TurnOn();
 }
 
 void CLaser::Precache( void )
@@ -1348,17 +1379,13 @@ void CLaser::FireAtPoint( Vector startpos, TraceResult &tr )
 
 	BeamDamage( &tr );
 	DoSparks( startpos, tr.vecEndPos );
-	SetEndPos( tr.vecEndPos );
-	if ( m_pStartSprite )
-		UTIL_SetOrigin( m_pStartSprite, tr.vecEndPos );
-
-	BeamDamage( &tr );
-	DoSparks( GetStartPos(), tr.vecEndPos );
 }
 
 void CLaser::StrikeThink( void )
 {
 	Vector startpos = pev->origin;
+	bool success = true;
+
 	if (m_iszStartPosition)
 	{
 		startpos = CalcLocus_Position(this, m_hActivator, STRING(m_iszStartPosition)); //AJH allow *locus start/end positions
@@ -1372,12 +1399,20 @@ void CLaser::StrikeThink( void )
 	{
 		CBaseEntity *pEnd = RandomTargetname( STRING(pev->message) );
 
-		if ( pEnd ) m_firePosition = CalcLocus_Position(this,pEnd,STRING(pev->message)); 
+		if ( pEnd )
+		{
+			pEnd->CalcPosition( m_hActivator, &m_firePosition );
+		}
+		else
+		{
+			m_firePosition = CalcLocus_Position( this, m_hActivator, STRING(pev->message));
+		}
 	}
 	
 	TraceResult tr;
 
-	//UTIL_TraceLine( pev->origin, m_firePosition, dont_ignore_monsters, NULL, &tr );
+//LRC
+//	UTIL_TraceLine( pev->origin, m_firePosition, dont_ignore_monsters, NULL, &tr );
 	IGNORE_GLASS iIgnoreGlass;
 	if (m_iStoppedBy % 2) // if it's an odd number
 		iIgnoreGlass = ignore_glass;
@@ -1427,6 +1462,7 @@ void CLaser::StrikeThink( void )
 	}
 	SetNextThink( 0.1 );
 }
+
 
 
 class CGlow : public CPointEntity
@@ -2020,10 +2056,10 @@ void CGibShooter::Spawn( void )
 	pev->solid = SOLID_NOT;
 	pev->effects = EF_NODRAW;
 
-	if ( m_flDelay == 0 )
-	{
-		m_flDelay = 0.1;
-	}
+//	if ( m_flDelay == 0 )
+//	{
+//		m_flDelay = 0.1;
+//	}
 
 	if ( m_flGibLife == 0 )
 	{
@@ -2031,7 +2067,7 @@ void CGibShooter::Spawn( void )
 	}
 
 	SetMovedir ( pev );
-//	if (pev->body == 0)
+	if (pev->body == 0)
 		pev->body = MODEL_FRAMES( m_iGibModelIndex );
 }
 
@@ -2090,15 +2126,15 @@ CBaseEntity *CGibShooter :: CreateGib ( Vector vecPos, Vector vecVel )
 void CGibShooter :: ShootThink ( void )
 {
 	int i;
-/*	if (m_flDelay == 0) // LRC - delay is 0, fire them all at once.
+	if (m_flDelay == 0) // LRC - delay is 0, fire them all at once.
 	{
 		i = m_iGibs;
 	}
 	else
 	{
-*/		i = 1;
+		i = 1;
 		SetNextThink( m_flDelay );
-//	}
+	}
 
 	while (i > 0)
 	{
@@ -2106,7 +2142,7 @@ void CGibShooter :: ShootThink ( void )
 		Vector vecPos;
 		float flGibVelocity;
 		if (!FStringNull(m_iszVelFactor))
-			flGibVelocity = CalcLocus_Ratio(m_hActivator, STRING(m_iszVelFactor));
+			flGibVelocity = CalcLocus_Number(m_hActivator, STRING(m_iszVelFactor));
 		else
 			flGibVelocity = 1;
 
@@ -2301,7 +2337,7 @@ void CEnvShooter :: Precache ( void )
 
 CBaseEntity *CEnvShooter :: CreateGib ( Vector vecPos, Vector vecVel )
 {
-	if (pev->noise) pev->scale = CalcLocus_Ratio(this, STRING(pev->noise),0);  //AJH / MJB - allow locus_ratio for scale
+	if (pev->noise) pev->scale = CalcLocus_Number(this, STRING(pev->noise),0);  //AJH / MJB - allow locus_ratio for scale
 	if (m_iPhysics <= 1) // normal gib or sticky gib
 	{
 	CGib *pGib = GetClassPtr( (CGib *)NULL );
@@ -2634,14 +2670,7 @@ void CBlood::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useTyp
 
 		UTIL_TraceLine( start, start + forward * BloodAmount() * 2, ignore_monsters, NULL, &tr );
 		if ( tr.flFraction != 1.0 )
-		{
-			int blood;
-			if(Color() == BLOOD_COLOR_RED)blood = 1;
-          		else if(Color() == BLOOD_COLOR_YELLOW)blood = 2;
-          		CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-			PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), blood, 0, 0 );
-			//UTIL_BloodDecalTrace( &tr, Color() );
-		}
+			UTIL_BloodDecalTrace( &tr, Color() );
 	}
 }
 
@@ -3978,10 +4007,12 @@ void CEnvDLight::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 }
 
 extern int gmsgKeyedDLight;
+extern int gmsgKeyedELight;
 
 void CEnvDLight::MakeLight( BOOL bActive)
 {
-	MESSAGE_BEGIN( MSG_ALL, gmsgKeyedDLight, NULL );
+//	MESSAGE_BEGIN( MSG_ALL, gmsgKeyedDLight, NULL );
+	MESSAGE_BEGIN( MSG_ALL, gmsgKeyedELight, NULL );
 		WRITE_BYTE( m_iKey );
 		WRITE_BYTE( bActive );			// visible?
 		if (bActive)
@@ -4016,6 +4047,7 @@ void CEnvDLight::Think( void )
 class CEnvELight : public CEnvDLight
 {
 public:
+	void	PostSpawn( void );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void	MakeLight(int iTime);
 	virtual int		Save( CSave &save );
@@ -4023,16 +4055,28 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	EHANDLE m_hAttach;
+	int			m_iKey;
+	static int	ms_iNextFreeKey;
 };
 
 LINK_ENTITY_TO_CLASS( env_elight, CEnvELight );
 
+int CEnvELight::ms_iNextFreeKey = 1;
+
 TYPEDESCRIPTION	CEnvELight::m_SaveData[] = 
 {
 	DEFINE_FIELD( CEnvELight, m_hAttach, FIELD_EHANDLE ),
+	DEFINE_FIELD( CEnvELight, m_iKey, FIELD_INTEGER ),
 };
 
 IMPLEMENT_SAVERESTORE( CEnvELight, CEnvDLight );
+
+void CEnvELight::PostSpawn( void )
+{
+	// each env_elight uses its own key to reference the light on the client
+	m_iKey = ms_iNextFreeKey;
+	ms_iNextFreeKey++;
+}
 
 void CEnvELight::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
@@ -4072,7 +4116,8 @@ void CEnvELight::MakeLight(int iTime)
 		WRITE_BYTE( pev->rendercolor.x );	// r
 		WRITE_BYTE( pev->rendercolor.y );	// g
 		WRITE_BYTE( pev->rendercolor.z );	// b
-		WRITE_BYTE( iTime );				// time * 10
+		//WRITE_BYTE( iTime );				// time * 10
+		WRITE_BYTE( pev->health );			// time * 10
 		WRITE_COORD( pev->frags );			// decay * 0.1
 	MESSAGE_END( );
 }
@@ -4126,7 +4171,7 @@ void CEnvDecal::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	}
 
 	if (pev->message)
-		vecOffs = vecOffs * CalcLocus_Ratio( pActivator, STRING(pev->message) );
+		vecOffs = vecOffs * CalcLocus_Number( pActivator, STRING(pev->message) );
 	else
 		vecOffs = vecOffs.Normalize() * 4000;
 
@@ -4149,23 +4194,8 @@ void CEnvDecal::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		WRITE_SHORT( iTexture );
 		WRITE_SHORT( entityIndex );
 		if ( entityIndex )
-		WRITE_SHORT( (int)VARS(trace.pHit)->modelindex );
+			WRITE_SHORT( (int)VARS(trace.pHit)->modelindex );
 	MESSAGE_END();
-
-	Vector mirpos = UTIL_MirrorPos(trace.vecEndPos);
-	if(mirpos != Vector(0,0,0))
-	{
-		MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY);
-		WRITE_BYTE( TE_BSPDECAL );
-		WRITE_COORD( mirpos.x );
-		WRITE_COORD( mirpos.y );
-		WRITE_COORD( mirpos.z );
-		WRITE_SHORT( iTexture );
-		WRITE_SHORT( entityIndex );
-		if ( entityIndex )
-		WRITE_SHORT( (int)VARS(trace.pHit)->modelindex );
-		MESSAGE_END();
-	}
 }
 
 void CEnvDecal::Spawn( void )
@@ -4325,7 +4355,7 @@ void CItemSoda::CanTouch ( CBaseEntity *pOther )
 #define SF_FOG_ACTIVE 1
 #define SF_FOG_FADING 0x8000
 
-class CEnvFog : public CBaseEntity
+class CEnvFog : public CPointEntity
 {
 public:
 	void Spawn( void );
@@ -4500,14 +4530,19 @@ void CEnvFog :: TurnOff ( void )
 void CEnvFog :: ResumeThink ( void )
 {
 //	ALERT(at_console, "Fog resume %f\n", gpGlobals->time);
-	SetThink(&CEnvFog ::FadeInDone);
+	SetThink(&CEnvFog ::Resume2Think);
 	SetNextThink(0.1);
+}
+
+void CEnvFog :: Resume2Think ( void )
+{
+	SendData( pev->rendercolor, m_iFadeIn, m_iStartDist, m_iEndDist);
 }
 
 void CEnvFog :: FadeInDone ( void )
 {
 	pev->spawnflags &= ~SF_FOG_FADING;
-	SendData( pev->rendercolor, 0, m_iStartDist, m_iEndDist);
+//LRC 1.8 we don't need to resend...	SendData( pev->rendercolor, 0, m_iStartDist, m_iEndDist);
 
 	if (m_fHoldTime)
 	{
@@ -4587,6 +4622,12 @@ void CEnvSky :: DesiredAction ()
 		WRITE_COORD(pev->origin.x); // view position
 		WRITE_COORD(pev->origin.y);
 		WRITE_COORD(pev->origin.z);
+
+		//AJH scale of the skybox 1/x (0=infinitly large/far away = no parallax)
+		//No parallax is the default behaviour. FGD's can set a new default.
+		WRITE_BYTE(pev->frags);
+		//WRITE_BYTE(ENTINDEX(edict()));
+
 	MESSAGE_END();
 }
 
@@ -4617,16 +4658,16 @@ LINK_ENTITY_TO_CLASS( env_particle, CParticle );
 
 void CParticle::Spawn( void )
 {
-	pev->solid		= SOLID_NOT;
+	pev->solid			= SOLID_NOT;
 
-	pev->movetype		= MOVETYPE_NOCLIP;
+//	pev->movetype		= MOVETYPE_NONE;	//AJH
+	pev->movetype		= MOVETYPE_NOCLIP;	//AJH
 
-	pev->renderfx       	= kRenderFxEntInPVS;
 	pev->renderamt		= 128;
 	pev->rendermode		= kRenderTransTexture;
 
-	// 'body' determines whether the effect is active or not
-	pev->body		= (pev->spawnflags & SF_PARTICLE_ON) != 0;
+	// 'body' determines whether the effect is active or not //AJH only if we have a targetname
+	pev->body			= pev->targetname?(pev->spawnflags & SF_PARTICLE_ON) != 0 : 1;
 
 	Precache();
 
@@ -4661,7 +4702,7 @@ void CParticle::Think( void )
 
 void CParticle::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if (pev->spawnflags & SF_PARTICLE_SPAWNUSE)//AJH Spawnable env_particles!!
+	if (pev->spawnflags & SF_PARTICLE_SPAWNUSE || useType==USE_SPAWN)		//AJH Spawnable env_particles!!
 	{
 		// Create a new entity with Cparticle private data
 		CParticle *pParticle = GetClassPtr( (CParticle *)NULL );
@@ -4692,87 +4733,143 @@ void CParticle::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 }
 
 //=========================================================
-// G-Cont - env_mirror, mirroring models and decals
+// G-Cont - env_mirror, mirroring only models
 //=========================================================
+
+#define SF_MIRROR_DRAWPLAYER 0x01
 
 class CEnvMirror : public CBaseEntity
 {
 public:
 	void Spawn( void );
+	void Precache( void );
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void KeyValue( KeyValueData* pkvd);
 	virtual int ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	void Think( void );
-	STATE GetState( void ) { return pev->impulse ? STATE_ON:STATE_OFF; }
+	void EXPORT MirrorThink( void );
+	virtual int Save( CSave &save );
+	virtual int Restore( CRestore &restore );
+	STATE	GetState( void ) { return m_iActive?STATE_ON:STATE_OFF; }//Support this stuff for watcher
+	int m_iActive;
+	float m_flRadius;
+	static TYPEDESCRIPTION m_SaveData[];
+private:
+	int m_iInitialRenderMode;
+	BOOL bSent;
+	unsigned short m_usMirror;//Moved from weapons.cpp for more struct code. G-Cont
 };
+
+TYPEDESCRIPTION CEnvMirror::m_SaveData[] = 
+{
+	DEFINE_FIELD( CEnvMirror, m_iInitialRenderMode, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvMirror, m_iActive, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvMirror, m_flRadius, FIELD_FLOAT ),
+};
+IMPLEMENT_SAVERESTORE( CEnvMirror, CBaseEntity );
 
 void CEnvMirror :: KeyValue( KeyValueData *pkvd )
 {
+	
 	if (FStrEq(pkvd->szKeyName, "radius"))
 	{
-		pev->waterlevel = atof(pkvd->szValue);
+		m_flRadius = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
-	else	CBaseEntity::KeyValue( pkvd );
+
 }
 
 LINK_ENTITY_TO_CLASS( env_mirror, CEnvMirror );
 
 void CEnvMirror :: Spawn( void )
 { 
-	if (!m_pMoveWith) pev->flags |= FL_WORLDBRUSH;
+	// G-Cont. added this for emulate shiny floor (without this flag monsters can't walk on it)
+	if (!m_pMoveWith) 
+		pev->flags |= FL_WORLDBRUSH;
 
 	pev->angles = g_vecZero; 
 	pev->movetype = MOVETYPE_PUSH; // so it doesn't get pushed by anything
+
 	pev->solid = SOLID_BSP;
 
- 	pev->impulse = TRUE;//enable mirror
+	pev->impulse = 1;
+          m_iActive = TRUE;
+          
 	Precache();          
 
 	SET_MODEL( ENT(pev), STRING(pev->model) );
-	pev->body = pev->rendermode;//save current rendermode
-
-	//Smart field system ©
-         	if (!pev->waterlevel) pev->waterlevel = 330;
-	if (!pev->frags)
+	SetThink (&CEnvMirror :: MirrorThink);
+	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER) CBaseEntity::Create( "player_marker", VecBModelOrigin(pev), pev->angles, NULL );	
+	m_iInitialRenderMode = pev->rendermode;
+         	if (!m_flRadius) m_flRadius = 330;
+	if (!pev->frags)//Smart field system. g-cont
 	{
 		if (pev->size.y > pev->size.x && pev->size.z > pev->size.x) pev->frags = 0;
 		if (pev->size.x > pev->size.y && pev->size.z > pev->size.y) pev->frags = 1;	
 		if (pev->size.y > pev->size.z && pev->size.x > pev->size.z) pev->frags = 2;
 	}
+
+	SetNextThink (0.1);
 }
 
-void CEnvMirror :: Think( void )
+void CEnvMirror :: Precache( void )
 {
-	MESSAGE_BEGIN(MSG_BROADCAST, gmsgSetMirror, VecBModelOrigin(pev));
-		WRITE_COORD(VecBModelOrigin(pev).x);	//mirror origin
-		WRITE_COORD(VecBModelOrigin(pev).y);
-		WRITE_COORD(VecBModelOrigin(pev).z);	
-		WRITE_SHORT(pev->waterlevel);		//radius
-		WRITE_BYTE(pev->frags);		//type
-		WRITE_BYTE(pev->impulse);		//state
-	MESSAGE_END();
+	if (pev->spawnflags & SF_MIRROR_DRAWPLAYER) UTIL_PrecacheOther( "player_marker" );
+	m_usMirror = PRECACHE_EVENT(1,"events/mirror.sc");
+	bSent = FALSE;
 }
+
+void CEnvMirror :: MirrorThink( void )
+{
+	if (bSent)
+	{
+		SetNextThink (0.01);
+		return;
+	}
+
+	if (pev->impulse)
+	{
+		if (pev->rendermode != m_iInitialRenderMode) pev->rendermode = m_iInitialRenderMode;
+
+	      	if (UTIL_PlayerByIndex(1))
+		{
+		         	PLAYBACK_EVENT_FULL (FEV_RELIABLE|FEV_GLOBAL, edict(), m_usMirror, 0.0, (float *)&Center(), (float *)&g_vecZero, 0.0, 0.0, m_flRadius, pev->frags, 1, 0);
+			bSent = TRUE;
+		}
+
+	}
+	else
+	{
+		if (pev->rendermode != kRenderNormal)
+		{
+			pev->rendermode = kRenderNormal;
+			PLAYBACK_EVENT_FULL (FEV_RELIABLE|FEV_GLOBAL, edict(), m_usMirror, 0.0, (float *)&Center(), (float *)&g_vecZero, 0.0, 0.0, m_flRadius, pev->frags, 0, 0);
+		}
+
+		bSent = TRUE;
+	}
+	SetNextThink ( 0.01 );
+}
+
 
 void CEnvMirror :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	if (useType == USE_TOGGLE)
+	if ( ShouldToggle( useType, m_iActive ) )
+		m_iActive = !m_iActive;
+
+	if ( m_iActive )
 	{
-		if(pev->impulse) useType = USE_OFF;
-		else useType = USE_ON;
+		m_iActive = TRUE;
+		pev->impulse = 1;
+		bSent = FALSE;
 	}
-	if(useType == USE_ON)
+	else
 	{
-		pev->impulse = TRUE;
-		pev->rendermode = pev->body;
+		m_iActive = FALSE;
+		pev->impulse = 0;
+		bSent = FALSE;
 	}
-	else if(useType == USE_OFF)
-	{
-		pev->impulse = FALSE;
-		pev->rendermode = kRenderNormal;
-	}
-	Think();
 }
+
 //=========================================================
 // G-Cont - env_rain, use triAPI
 //=========================================================

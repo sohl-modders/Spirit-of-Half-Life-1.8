@@ -249,7 +249,7 @@ IMPLEMENT_SAVERESTORE( CCyclerSprite, CBaseEntity );
 
 void CCyclerSprite::Spawn( void )
 {
-	pev->solid		= SOLID_SLIDEBOX;
+	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_NONE;
 	pev->takedamage		= DAMAGE_YES;
 	pev->effects		= 0;
@@ -381,6 +381,9 @@ void CWeaponCycler::SecondaryAttack( void )
 
 	m_flNextSecondaryAttack = gpGlobals->time + 0.3;
 }
+
+
+
 // Flaming Wreakage
 class CWreckage : public CBaseMonster
 {

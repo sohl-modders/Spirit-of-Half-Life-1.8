@@ -27,7 +27,7 @@
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"decals.h"
-#include	"weapons.h"
+
 
 class CLegacyCineMonster : public CBaseMonster
 {
@@ -221,8 +221,7 @@ void CCineBlood :: BloodGush ( void )
 		if ( tr.flFraction != 1.0 )
 		{
 			// Decal with a bloodsplat
-         			CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-			PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), 1, 0, 0 );
+			UTIL_BloodDecalTrace( &tr, BLOOD_COLOR_RED );
 		}
 	}
 }

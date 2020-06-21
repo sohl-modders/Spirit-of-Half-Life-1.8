@@ -71,7 +71,8 @@ public:
 	void Killed( entvars_t *pevAttacker, int iGib );
 
 	MONSTERSTATE GetIdealState ( void ) { return MONSTERSTATE_IDLE; };
-	int CanPlaySequence( BOOL fDisregardState ) { return TRUE; };
+//	int CanPlaySequence( BOOL fDisregardState ) { return TRUE; };
+	int CanPlaySequence( int interruptFlags ) { return TRUE; };
 
 	int Classify( void );
 
@@ -261,7 +262,7 @@ void CTentacle :: Spawn( )
 	UTIL_SetSize( pev, Vector( -32, -32, 0 ), Vector( 32, 32, 64 ) );
 
 	pev->takedamage		= DAMAGE_AIM;
-	pev->flags			|= FL_MONSTER | FL_FLY;
+	pev->flags			|= FL_MONSTER;
 	
 	m_bloodColor		= BLOOD_COLOR_GREEN;
 

@@ -580,10 +580,7 @@ void CGargantua :: FlameUpdate( void )
 			{
 				StreakSplash( trace.vecEndPos, trace.vecPlaneNormal, 6, 20, 50, 400 );
 				streaks = TRUE;
-
-          			CBaseEntity *pHit = CBaseEntity::Instance( trace.pHit );
-				PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&trace.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), 5, 0, 0 );
-				//UTIL_DecalTrace( &trace, DECAL_SMALLSCORCH1 + RANDOM_LONG(0,2) );
+				UTIL_DecalTrace( &trace, DECAL_SMALLSCORCH1 + RANDOM_LONG(0,2) );
 			}
 			// RadiusDamage( trace.vecEndPos, pev, pev, gSkillData.gargantuaDmgFire, CLASS_ALIEN_MONSTER, DMG_BURN );
 			FlameDamage( vecStart, trace.vecEndPos, pev, pev, gSkillData.gargantuaDmgFire, CLASS_ALIEN_MONSTER, DMG_BURN );
@@ -1219,13 +1216,19 @@ void CGargantua::RunTask( Task_t *pTask )
 		{
 			if (m_fSequenceFinished)
 			{
-				FlameDestroy();
-				FlameControls( 0, 0 );
-				SetBoneController( 0, 0 );
-				SetBoneController( 1, 0 );
-				m_pCine->SequenceDone( this );
+				if (m_pCine->m_iRepeatsLeft > 0)
+					CBaseMonster::RunTask( pTask );
+				else
+				{
+					FlameDestroy();
+					FlameControls( 0, 0 );
+					SetBoneController( 0, 0 );
+					SetBoneController( 1, 0 );
+					m_pCine->SequenceDone( this );
+				}
 				break;
 			}
+			//if not finished, drop through into task_flame_sweep!
 		}
 		else
 		{

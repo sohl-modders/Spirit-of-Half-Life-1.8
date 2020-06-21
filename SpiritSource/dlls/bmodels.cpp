@@ -52,13 +52,11 @@ Vector VecBModelOrigin( entvars_t* pevBModel )
 /*QUAKED func_wall (0 .5 .8) ?
 This is just a solid wall if not inhibited
 */
-#define SF_FUNCWALL_ROTATE 1
 
 class CFuncWall : public CBaseEntity
 {
 public:
 	void	Spawn( void );
-	//void	PostSpawn(void);	 //AJH
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
 	virtual STATE GetState( void ) { return pev->frame?STATE_ON:STATE_OFF; };
@@ -78,16 +76,19 @@ void CFuncWall :: Spawn( void )
 	if (!m_pMoveWith) //LRC
 		pev->flags |= FL_WORLDBRUSH;
 
-	pev->angles		= g_vecZero; 
 	
-/*	if (pev->spawnflags & SF_FUNCWALL_ROTATE){	//AJH - Now we can rotate complex stuff on spawn - Doesn't work!!!
-		ALERT(at_debug,"DEBUG: Rotate flag set, rotating brush in 0.1seconds\n");		
-		pev->flags &= !FL_WORLDBRUSH;
-		SetThink(&CFuncWall::PostSpawn);
-		SetNextThink(0.1);
-		
-	}
-*/
+	
+
+	//AJH This allows rotating of func_walls on spawn.
+	//It would be easier to just use pev->angles directly but some old maps might have 'angles' specified already
+	//and we don't want to stuff them up. Therefore we'll make people use the key 'message' in VHE to specify the angle.
+	//pev->angles		= g_vecZero;
+	
+	UTIL_StringToVector((float*)pev->angles, STRING(pev->message));
+
+	if (pev->angles != g_vecZero)
+			ALERT(at_debug,"Rotating brush %s to %i,%i,%i\n",STRING(pev->model),pev->angles.x,pev->angles.y,pev->angles.z);
+
 	pev->movetype	= MOVETYPE_PUSH;  // so it doesn't get pushed by anything
 	pev->solid		= SOLID_BSP;
 	SET_MODEL( ENT(pev), STRING(pev->model) );
@@ -99,17 +100,6 @@ void CFuncWall :: Spawn( void )
 	else if (m_iStyle <= -32) LIGHT_STYLE(-m_iStyle, "z");
 	
 }
-
-/*
-void CFuncWall :: PostSpawn (){					//AJH - Bug, this doesn't work, I have no idea why.
-	ALERT(at_debug,"DEBUG: Rotating from %f %f %f ", pev->angles.x,pev->angles.y,pev->angles.z);
-	//UTIL_SetAngles(this,pev->vuser1);
-	pev->angles = pev->vuser1;
-	ALERT(at_debug,"to %f %f %f\n",pev->angles.x,pev->angles.y,pev->angles.z);
-	ALERT(at_debug,"String vuser1 = %s\n",pev->vuser1);
-	DontThink();
-}
-*/
 
 void CFuncWall :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
@@ -572,7 +562,9 @@ void CFuncRotating :: Spawn( )
 	//	if (pev->dmg == 0)
 	//		pev->dmg = 2;
 
-	if ( FBitSet( pev->spawnflags, SF_BRUSH_ROTATE_INSTANT))
+	// instant-use brush?
+	//LRC - start immediately if unnamed, too.
+	if ( FBitSet( pev->spawnflags, SF_BRUSH_ROTATE_INSTANT) || FStringNull(pev->targetname) )
 	{		
 		SetThink(&CFuncRotating :: WaitForStart );
 		SetNextThink( 1.5 );	// leave a magic delay for client to start up

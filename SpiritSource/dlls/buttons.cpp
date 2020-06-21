@@ -864,7 +864,7 @@ void DoSpark(entvars_t *pev, const Vector &location )
 	Vector tmp = location + pev->size * 0.5;
 	UTIL_Sparks( tmp );
 
-	float flVolume = RANDOM_FLOAT ( 0.1 , 0.25 ) * 0.4;//random volume range
+	float flVolume = RANDOM_FLOAT ( 0.25 , 0.75 ) * 0.4;//random volume range
 	switch ( (int)(RANDOM_FLOAT(0,1) * 6) )
 	{
 		case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "buttons/spark1.wav", flVolume, ATTN_NORM);	break;
@@ -1506,6 +1506,8 @@ public:
 	void	Spawn(void);
 	void	Precache(void);
 	void	EXPORT SparkThink(void);
+	void	EXPORT SparkWait(void);
+	void	EXPORT SparkCyclic(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void	EXPORT SparkStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void	EXPORT SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void	KeyValue(KeyValueData *pkvd);
@@ -1537,7 +1539,11 @@ void CEnvSpark::Spawn(void)
 	SetThink( NULL );
 	SetUse( NULL );
 
-	if (FBitSet(pev->spawnflags, 32)) // Use for on/off
+	if (FBitSet(pev->spawnflags, 16))
+	{
+		SetUse(&CEnvSpark::SparkCyclic);
+	}
+	else if (FBitSet(pev->spawnflags, 32)) // Use for on/off
 	{
 		if (FBitSet(pev->spawnflags, 64)) // Start on
 		{
@@ -1550,12 +1556,15 @@ void CEnvSpark::Spawn(void)
 	else
 		SetThink(&CEnvSpark::SparkThink);
 		
-	SetNextThink( 0.1 + RANDOM_FLOAT (0, 1.5) );
-          	
-	if (m_flDelay <= 0)
-		m_flDelay = 1.5;
+	if (this->m_pfnThink)
+	{
+		SetNextThink( 0.1 + RANDOM_FLOAT ( 0, 1.5 ) );
 
-          Precache( );
+		if (m_flDelay <= 0)
+			m_flDelay = 1.5;
+	}
+
+	Precache( );
 }
 
 
@@ -1587,10 +1596,36 @@ void CEnvSpark::KeyValue( KeyValueData *pkvd )
 		CBaseEntity::KeyValue( pkvd );
 }
 
+void EXPORT CEnvSpark::SparkCyclic(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	if (m_pfnThink == NULL)
+	{
+		DoSpark( pev, pev->origin );
+		SetThink(&CEnvSpark:: SparkWait );
+		SetNextThink( m_flDelay );
+	}
+	else
+	{
+		SetThink(&CEnvSpark::SparkThink ); // if we're on SparkWait, change to actually spark at the specified time.
+	}
+}
+
+void EXPORT CEnvSpark::SparkWait(void)
+{
+	SetThink( NULL );
+}
+
 void EXPORT CEnvSpark::SparkThink(void)
 {
-	SetNextThink( 0.1 + RANDOM_FLOAT (0, m_flDelay) );
 	DoSpark( pev, pev->origin );
+	if (pev->spawnflags & 16)
+	{
+		SetThink( NULL );
+	}
+	else
+	{
+		SetNextThink( 0.1 + RANDOM_FLOAT (0, m_flDelay) );
+	}
 }
 
 void EXPORT CEnvSpark::SparkStart(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -1607,6 +1642,8 @@ void EXPORT CEnvSpark::SparkStop(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	SetThink(NULL);
 	m_iState = STATE_OFF; //LRC
 }
+//G-Cont. flag 16 is removed - we don't need this
+//AJH - Don't remove stuff just because YOU don't use it.
 
 
 

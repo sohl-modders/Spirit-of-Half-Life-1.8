@@ -131,10 +131,3 @@ HSPRITE LoadSprite(const char *pszName)
 	return SPR_Load(sz);
 }
 
-float TransformColor ( float color )
-{
-	float trns_clr;
-	if(color >= 0 ) trns_clr = color / 255.0f;
-	else trns_clr = 1.0;//default value
-	return trns_clr;
-}

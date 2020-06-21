@@ -23,7 +23,6 @@
 #include	"schedule.h"
 #include	"soundent.h"
 #include	"decals.h"
-#include	"weapons.h"
 
 #define		ROACH_IDLE				0
 #define		ROACH_BORED				1
@@ -96,9 +95,7 @@ void CRoach :: Touch ( CBaseEntity *pOther )
 	UTIL_TraceLine ( vecSpot, vecSpot + Vector ( 0, 0, -24 ),  ignore_monsters, ENT(pev), & tr);
 
 	// This isn't really blood.  So you don't have to screen it out based on violence levels (UTIL_ShouldShowBlood())
-          CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-	PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), 2, 0, 0 );
-	//UTIL_DecalTrace( &tr, DECAL_YBLOOD1 +RANDOM_LONG(0,5) );
+	UTIL_DecalTrace( &tr, DECAL_YBLOOD1 +RANDOM_LONG(0,5) );
 
 	TakeDamage( pOther->pev, pOther->pev, pev->health, DMG_CRUSH );
 }

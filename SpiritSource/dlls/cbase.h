@@ -54,7 +54,6 @@ CBaseEntity
 
 #include "saverestore.h"
 #include "schedule.h"
-#include "../engine/studio.h"
 
 #ifndef MONSTEREVENT_H
 #include "monsterevent.h"
@@ -96,6 +95,7 @@ typedef enum
 	USE_SET = 2,
 	USE_TOGGLE = 3,
 	USE_KILL = 4,
+	USE_SPAWN = 7,  //AJH
 // special signals, never actually get sent:
 	USE_SAME = 5,
 	USE_NOT = 6,
@@ -191,6 +191,12 @@ public:
 	BOOL				m_activated;	// LRC- moved here from func_train. Signifies that an entity has already been
 										// activated. (and hence doesn't need reactivating.)
 
+	//AJH Entities can now have custom names and kill techniques for deathnotices
+	//E.g instead of "Player1 killed Player2 with train" you can have "Player1 decapitated Player2 with a large table saw!)
+	string_t			killname;	//AJH custom 'deathnotice' name
+	string_t			killmethod;	//AJH custom kill techniques
+
+
 	//LRC - decent mechanisms for setting think times!
 	// this should have been done a long time ago, but MoveWith finally forced me.
 	virtual void		SetNextThink( float delay ) { SetNextThink(delay, FALSE); }
@@ -221,12 +227,14 @@ public:
 	virtual void ThinkCorrection( void );
 
 	//LRC - loci
-	virtual Vector	CalcPosition( CBaseEntity *pLocus )	{ return pev->origin; }
-	virtual Vector	CalcVelocity( CBaseEntity *pLocus )	{ return pev->velocity; }
-	virtual float	CalcRatio( CBaseEntity *pLocus )	{ return 0; }
+	virtual bool	CalcPosition( CBaseEntity *pLocus, Vector* OUTresult )	{ *OUTresult = pev->origin; return true; }
+	virtual bool	CalcVelocity( CBaseEntity *pLocus, Vector* OUTresult )	{ *OUTresult = pev->velocity; return true; }
+	virtual bool	CalcPYR( CBaseEntity *pLocus, Vector* OUTresult )	{ *OUTresult = pev->angles; return true; }
+	virtual bool	CalcNumber( CBaseEntity *pLocus, float* OUTresult )	{ *OUTresult = 0; return true; }
 
-	//LRC - aliases
-	virtual BOOL IsAlias( void ) { return FALSE; }
+	//LRC 1.8 - FollowAlias is now available to all; the special alias class is only for mutable ones.
+	virtual BOOL IsMutableAlias( void ) { return FALSE; }
+	virtual CBaseEntity *FollowAlias( CBaseEntity *pFrom ) { return NULL; }
 
 	// initialization functions
 	virtual void	Spawn( void ) { return; }
@@ -242,6 +250,15 @@ public:
 		else if (FStrEq(pkvd->szKeyName, "skill"))
 		{
 			m_iLFlags = atoi(pkvd->szValue);
+			pkvd->fHandled = TRUE;
+		}
+		else if (FStrEq(pkvd->szKeyName, "killname"))//AJH Custom 'kill' names for entities
+		{
+			killname = ALLOC_STRING(pkvd->szValue);
+			pkvd->fHandled = TRUE;
+		}else if (FStrEq(pkvd->szKeyName, "killmethod"))//AJH Custom 'kill' techniques for entities
+		{
+			killmethod = ALLOC_STRING(pkvd->szValue);
 			pkvd->fHandled = TRUE;
 		}
 		else if (FStrEq(pkvd->szKeyName, "style"))
@@ -262,21 +279,6 @@ public:
 
 	// Setup the object->object collision box (pev->mins / pev->maxs is the object->world collision box)
 	virtual void	SetObjectCollisionBox( void );
-
-	void UTIL_AutoSetSize( void )//automatically set collision box
-	{
-		studiohdr_t *pstudiohdr;
-		pstudiohdr = (studiohdr_t*)GET_MODEL_PTR( ENT(pev) );
-
-		if (pstudiohdr == NULL)
-		{
-			ALERT(at_console,"Unable to fetch model pointer!\n");
-			return;
-		}
-		mstudioseqdesc_t    *pseqdesc;
-		pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex);
-		UTIL_SetSize(pev,pseqdesc[ pev->sequence ].bbmin,pseqdesc[ pev->sequence ].bbmax);
-	}
 
 // Classify - returns the type of group (e.g., "alien monster", or "human military" so that monsters
 // on the same side won't attack each other, even if they have different classnames.
@@ -663,6 +665,13 @@ public:
 	float				m_flLinearMoveSpeed;	// LRC- allows a LinearMove to be delayed until a think.
 	float				m_flAngularMoveSpeed;	// LRC
 
+	float				m_flLinearAccel;		//AJH - For acceleration, used in subs.cpp
+	float				m_flLinearDecel;		//AJH
+	float				m_flCurrentTime;		//AJH
+	float				m_flAccelTime;			//AJH
+	float				m_flDecelTime;			//AJH
+	bool				m_bDecelerate;			//AJH
+
 	Vector				m_vecFinalAngle;
 
 	int					m_bitsDamageInflict;	// DMG_ damage type that the door or tigger does
@@ -681,6 +690,7 @@ public:
 
 	// common member functions
 	void LinearMove( Vector	vecInput, float flSpeed );
+	void LinearMove(Vector vecInput, float flSpeed, float flAccel, float flDecel); //AJH-Accelerated linear movement
 	void EXPORT LinearMoveNow( void ); //LRC- think function that lets us guarantee a LinearMove gets done as a think.
 	void EXPORT LinearMoveDone( void );
 	void EXPORT LinearMoveDoneNow( void ); //LRC
@@ -780,7 +790,7 @@ public:
 #define POISON_DURATION		5
 #define POISON_DAMAGE		2.0
 
-#define RADIATION_DURATION	2
+#define RADIATION_DURATION	10
 #define RADIATION_DAMAGE	1.0
 
 #define ACID_DURATION		2
@@ -935,11 +945,13 @@ typedef struct _SelAmmo
 //LRC- much as I hate to add new globals, I can't see how to read data from the World entity.
 extern BOOL g_startSuit;
 
+extern BOOL g_allowGJump; //AJH SP Gaussjump
+
 //LRC- moved here from alias.cpp so that util functions can use these defs.
-class CBaseAlias : public CPointEntity
+class CBaseMutableAlias : public CPointEntity
 {
 public:
-	BOOL IsAlias( void ) { return TRUE; };
+	BOOL IsMutableAlias( void ) { return TRUE; };
 	virtual CBaseEntity *FollowAlias( CBaseEntity *pFrom ) { return NULL; };
 	virtual void ChangeValue( int iszValue ) { ALERT(at_error, "%s entities cannot change value!", STRING(pev->classname)); }
 	virtual void ChangeValue( CBaseEntity *pValue ) { ChangeValue(pValue->pev->targetname); }
@@ -949,7 +961,7 @@ public:
 	virtual int		Restore( CRestore &restore );
 	static	TYPEDESCRIPTION m_SaveData[];
 
-	CBaseAlias *m_pNextAlias;
+	CBaseMutableAlias *m_pNextAlias;
 };
 
 class CInfoGroup : public CPointEntity
@@ -970,7 +982,7 @@ public:
 	int		m_iszDefaultMember;
 };
 
-class CMultiAlias : public CBaseAlias
+class CMultiAlias : public CBaseMutableAlias
 {
 public:
 	void KeyValue( KeyValueData *pkvd );
@@ -1003,7 +1015,7 @@ public:
 	void Precache( void );
 	void KeyValue( KeyValueData *pkvd );
 
-	CBaseAlias *m_pFirstAlias;
+	CBaseMutableAlias *m_pFirstAlias;
 };
 
 extern CWorld *g_pWorld;

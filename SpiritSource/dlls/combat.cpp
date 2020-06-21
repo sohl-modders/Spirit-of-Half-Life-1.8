@@ -779,13 +779,7 @@ void CGib :: BounceGibTouch ( CBaseEntity *pOther )
 			vecSpot = pev->origin + Vector ( 0 , 0 , 8 );//move up a bit, and trace down.
 			UTIL_TraceLine ( vecSpot, vecSpot + Vector ( 0, 0, -24 ),  ignore_monsters, ENT(pev), & tr);
 
-			//UTIL_BloodDecalTrace( &tr, m_bloodColor );
-
-			int blood;
-			if(m_bloodColor == BLOOD_COLOR_RED)blood = 1;
-          		else if(m_bloodColor == BLOOD_COLOR_YELLOW)blood = 2;
-          		CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-			PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), blood, 0, 0 );
+			UTIL_BloodDecalTrace( &tr, m_bloodColor );
 
 			m_cBloodDecals--; 
 		}
@@ -821,13 +815,7 @@ void CGib :: StickyGibTouch ( CBaseEntity *pOther )
 
 	UTIL_TraceLine ( pev->origin, pev->origin + pev->velocity * 32,  ignore_monsters, ENT(pev), & tr);
 
-	//UTIL_BloodDecalTrace( &tr, m_bloodColor );
-
-	int blood;
-	if(m_bloodColor == BLOOD_COLOR_RED)blood = 1;
-          else if(m_bloodColor == BLOOD_COLOR_YELLOW)blood = 2;
-          CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-	PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), blood, 0, 0 );
+	UTIL_BloodDecalTrace( &tr, m_bloodColor );
 
 	pev->velocity = tr.vecPlaneNormal * -1;
 	pev->angles = UTIL_VecToAngles ( pev->velocity );
@@ -1529,8 +1517,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				pEntity->TraceAttack(pevAttacker, iDamage, vecDir, &tr, DMG_BULLET | ((iDamage > 16) ? DMG_ALWAYSGIB : DMG_NEVERGIB) );
 				
 				TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-				PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pEntity->entindex(), 6, 0, 0 );
-				//DecalGunshot( &tr, iBulletType );
+				DecalGunshot( &tr, iBulletType );
 			} 
 			else switch(iBulletType)
 			{
@@ -1539,8 +1526,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				pEntity->TraceAttack(pevAttacker, gSkillData.monDmg9MM, vecDir, &tr, DMG_BULLET);
 				
 				TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-				PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pEntity->entindex(), 6, 0, 0 );
-				//DecalGunshot( &tr, iBulletType );
+				DecalGunshot( &tr, iBulletType );
 
 				break;
 
@@ -1548,8 +1534,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				pEntity->TraceAttack(pevAttacker, gSkillData.monDmgMP5, vecDir, &tr, DMG_BULLET);
 				
 				TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-				PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pEntity->entindex(), 6, 0, 0 );
-				//DecalGunshot( &tr, iBulletType );
+				DecalGunshot( &tr, iBulletType );
 
 				break;
 
@@ -1558,8 +1543,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				if ( !tracer )
 				{
 					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-					PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pEntity->entindex(), 6, 0, 0 );
-					//DecalGunshot( &tr, iBulletType );
+					DecalGunshot( &tr, iBulletType );
 				}
 				break;
 			
@@ -1568,8 +1552,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 				if ( !tracer )
 				{
 					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-					PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pEntity->entindex(), 6, 0, 0 );
-					//DecalGunshot( &tr, iBulletType );
+					DecalGunshot( &tr, iBulletType );
 				}
 				break;
 
@@ -1745,13 +1728,7 @@ void CBaseEntity :: TraceBleed( float flDamage, Vector vecDir, TraceResult *ptr,
 
 		if ( Bloodtr.flFraction != 1.0 )
 		{
-			//UTIL_BloodDecalTrace( &Bloodtr, BloodColor() );
-			
-			int blood;
-			if(BloodColor() == BLOOD_COLOR_RED)blood = 1;
-          		else if(BloodColor() == BLOOD_COLOR_YELLOW)blood = 2;
-          		CBaseEntity *pHit = CBaseEntity::Instance( Bloodtr.pHit );
-			PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&Bloodtr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), blood, 0, 0 );
+			UTIL_BloodDecalTrace( &Bloodtr, BloodColor() );
 		}
 	}
 }
@@ -1804,11 +1781,7 @@ void CBaseMonster :: MakeDamageBloodDecal ( int cCount, float flNoise, TraceResu
 
 		if ( Bloodtr.flFraction != 1.0 )
 		{
-			int blood;
-			if(BloodColor() == BLOOD_COLOR_RED)blood = 1;
-          		else if(BloodColor() == BLOOD_COLOR_YELLOW)blood = 2;
-          		CBaseEntity *pHit = CBaseEntity::Instance( Bloodtr.pHit );
-			PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&Bloodtr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), blood, 0, 0 );
+			UTIL_BloodDecalTrace( &Bloodtr, BloodColor() );
 		}
 	}
 }

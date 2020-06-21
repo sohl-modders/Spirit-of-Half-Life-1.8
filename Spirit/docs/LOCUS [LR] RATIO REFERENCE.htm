@@ -1,0 +1,140 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="robots" content="noarchive">
+<meta name="keywords"
+content="spirit,half-life,half,life,calc,entity,locus,ratio">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>LOCUS [LR] RATIO REFERENCE</title>
+</head>
+
+<body bgcolor="#444444" text="#FFD030" link="#F0F0A0"
+vlink="#A0A080">
+
+<p>&nbsp;</p>
+
+<h1>LOCUS [LR] RATIO REFERENCE</h1>
+
+<h2>Learn how [LR] applies to different objects.</h2>
+
+<hr color="#FFD030">
+
+<p>Three new key/value pairs have been added to Spirit 1.4 that
+concern the calc_ratio entity:</p>
+
+<ul>
+    <li>'Ratio to use for Basis' <i>(skin)</i> </li>
+    <li>'Ratio to use for Offset' <i>(body)</i> </li>
+    <li>'Ratio to use for Scale' <i>(button)</i></li>
+</ul>
+
+<p>These keys allow you to change the ratio or value an object
+return when it is queried by a calc_ratio entity. Typically ratio
+values would only return the health of a monster/player, the
+charge of a healthcharger/HEVcharger, or the position of a
+momentary door. Some significant additions have made the Locus
+Ratio values even more useful.</p>
+
+<p>The new calc_ratio can read several different values from
+various entities, including <b>health</b>, <b>speed</b>, <b>armed-status</b>,
+<b>sneaking-status</b> (under development), and on watcher
+entities, <b>count</b>.</p>
+
+<p>For <b>breakable</b> and <b>pushable</b> entities,</p>
+
+<ul>
+    <li><b><i>health</i></b> can be read as a value between 0 and
+        1 (i.e. ratio = <sup>health</sup>/<sub>maxhealth</sub>).</li>
+</ul>
+
+<p>For <b>monsters</b> and NPCs,</p>
+
+<ul>
+    <li><b><i>health</i></b> can be read as a value between 0 and
+        1 (i.e. ratio = <sup>health</sup>/<sub>maxhealth</sub>), </li>
+    <li><b><i>speed</i></b> can be read as an absolute value
+        (i.e. ratio is not divided by maxspeed).</li>
+</ul>
+
+<p>For <b>players</b> (singleplayer/multiplayer),</p>
+
+<ul>
+    <li><b><i>health</i></b> can be read as a value between 0 and
+        1 (i.e. ratio = <sup>health</sup>/<sub>maxhealth</sub>), </li>
+    <li><b><i>speed</i></b> can be read as an absolute value
+        (i.e. ratio is not divided by maxspeed), </li>
+    <li><b><i>isSneaking</i></b> (not yet implemented) can be
+        read as a boolean value (true or false), </li>
+    <li><b><i>hasWeapons</i></b> (determines if the player is
+        armed) can be read as a boolean value (true or false).</li>
+</ul>
+
+<p>For <b>watcher_count</b> entities,</p>
+
+<ul>
+    <li><b><i>current count</i></b> can be read as an absolute
+        value, </li>
+    <li><sup><b><i>current count</i></b></sup><b><i>/</i></b><sub><b><i>comparison
+        number</i></b></sub> can be read as a value between 0 and
+        1.</li>
+</ul>
+
+<p>By changing the <i>skin</i>, <i>body</i>, and <i>button</i>
+key/values on a calc_ratio, you can access these different modes
+according to the table below:</p>
+
+<table border="1" cellpadding="12" cellspacing="0"
+bordercolor="#FFD030" bordercolordark="#444444"
+bordercolorlight="#F0F0A0"
+style="WIDTH: 100%; BORDER-COLLAPSE: collapse; TEXT-ALIGN: center">
+    <tr>
+        <td>&nbsp;</td>
+        <td><b>breakable/pushable</b></td>
+        <td><b>monsters</b></td>
+        <td><b>players</b></td>
+        <td style="WIDTH: 25%"><b>watcher_count</b></td>
+    </tr>
+    <tr>
+        <td><b>0</b></td>
+        <td><sup>health</sup>/<sub>maxhealth</sub></td>
+        <td><sup>health</sup>/<sub>maxhealth</sub></td>
+        <td><sup>health</sup>/<sub>maxhealth</sub></td>
+        <td>current count (absolute)</td>
+    </tr>
+    <tr>
+        <td><b>1</b></td>
+        <td>-</td>
+        <td>speed (absolute)</td>
+        <td>speed (absolute)</td>
+        <td><sup>current count</sup>/<sub>comparison number</sub></td>
+    </tr>
+    <tr>
+        <td><b>2</b></td>
+        <td>-</td>
+        <td>-</td>
+        <td>isSneaking (not yet implemented)</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td><b>3</b></td>
+        <td>-</td>
+        <td>-</td>
+        <td>hasWeapons</td>
+        <td>-</td>
+    </tr>
+</table>
+
+<p>For example, if you entered <b>3</b> in the 'Ratio to use for
+basis' (<i>skin</i>) field on a calc_ratio entity, and the 'Based
+on ratio' value targetted *player, then depending on whether or
+not the player was armed, the value returned would be '1' or '0'.
+In your FGD there may be descriptions that save you from relying
+on this chart.</p>
+
+<hr color="#FFD030">
+
+<p>Created September 04, 2004 for SOHL v1.4</p>
+</body>
+</html>

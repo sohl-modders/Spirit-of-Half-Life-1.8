@@ -81,13 +81,6 @@ void CHud::Think(void)
 	}
 }
 
-//LRC - fog fading values
-extern float g_fFadeDuration;
-extern float g_fStartDist;
-extern float g_fEndDist;
-//extern int g_iFinalStartDist;
-extern int g_iFinalEndDist;
-
 // Redraw
 // step through the local data,  placing the appropriate graphics & text as appropriate
 // returns 1 if they've changed, 0 otherwise
@@ -99,20 +92,30 @@ int CHud :: Redraw( float flTime, int intermission )
 	static m_flShotTime = 0;
 
 	//LRC - handle fog fading effects. (is this the right place for it?)
-	if (g_fFadeDuration)
+	if (g_fFogFadeDuration)
 	{
 		// Nicer might be to use some kind of logarithmic fade-in?
-		double fFraction = m_flTimeDelta/g_fFadeDuration;
-//		g_fStartDist -= (FOG_LIMIT - g_iFinalStartDist)*fFraction;
-		g_fEndDist -= (FOG_LIMIT - g_iFinalEndDist)*fFraction;
+		double fFraction = m_flTimeDelta/g_fFogFadeDuration;
+		if ( fFraction > 0 )
+		{
+			g_fFogFadeFraction += fFraction;
 
-//		CONPRINT("FogFading: %f - %f, frac %f, time %f, final %d\n", g_fStartDist, g_fEndDist, fFraction, flTime, g_iFinalEndDist);
+	//		CONPRINT("FogFading: %f - %f, frac %f, time %f, final %d\n", g_fStartDist, g_fEndDist, fFraction, flTime, g_iFinalEndDist);
 
-		// cap it
-//		if (g_fStartDist > FOG_LIMIT)				g_fStartDist = FOG_LIMIT;
-		if (g_fEndDist   > FOG_LIMIT)				g_fEndDist = FOG_LIMIT;
-//		if (g_fStartDist < g_iFinalStartDist)	g_fStartDist = g_iFinalStartDist;
-		if (g_fEndDist   < g_iFinalEndDist)		g_fEndDist   = g_iFinalEndDist;
+			if (g_fFogFadeFraction >= 1.0f)
+			{
+				// fading complete
+				g_fFogFadeFraction = 1.0f;
+				g_fFogFadeDuration = 0.0f;
+			}
+
+			// set the new fog values
+			g_fog.endDist = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.endDist, g_fogPostFade.endDist );
+			g_fog.startDist = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.startDist, g_fogPostFade.startDist );
+			g_fog.fogColor[0] = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.fogColor[0], g_fogPostFade.fogColor[0] );
+			g_fog.fogColor[1] = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.fogColor[1], g_fogPostFade.fogColor[1] );
+			g_fog.fogColor[2] = UTIL_Lerp( g_fFogFadeFraction, g_fogPreFade.fogColor[2], g_fogPostFade.fogColor[2] );
+		}
 	}
 	
 	// Clock was reset, reset delta
@@ -156,6 +159,76 @@ int CHud :: Redraw( float flTime, int intermission )
 	// return 0;
 
 	// trigger_viewset stuff
+	if ((viewFlags & 1) && (viewFlags & 4))	//AJH Draw the camera hud
+	{
+	
+		int r, g, b, x, y, a;
+		//wrect_t rc;
+		HSPRITE m_hCam1;
+		int HUD_camera_active;
+		int HUD_camera_rect;
+
+		a = 225;
+
+		UnpackRGB(r,g,b, gHUD.m_iHUDColor);
+		ScaleColors(r, g, b, a);
+
+		//Draw the flashing camera active logo
+			HUD_camera_active = gHUD.GetSpriteIndex( "camera_active" );
+			m_hCam1 = gHUD.GetSprite(HUD_camera_active);
+			SPR_Set(m_hCam1, r, g, b );
+			x = SPR_Width(m_hCam1, 0);
+			x = ScreenWidth - x;
+			y = SPR_Height(m_hCam1, 0)/2;
+		
+			// Draw the camera sprite at 1 fps
+			int i = (int)(flTime) % 2;
+			i = grgLogoFrame[i] - 1;
+
+			SPR_DrawAdditive( i,  x, y, NULL);
+
+		//Draw the camera reticle (top left)
+			HUD_camera_rect = gHUD.GetSpriteIndex( "camera_rect_tl" );
+			m_hCam1 = gHUD.GetSprite(HUD_camera_rect);
+			SPR_Set(m_hCam1, r, g, b );
+			x = ScreenWidth/4;
+			y = ScreenHeight/4;
+		
+			SPR_DrawAdditive( 0,  x, y, &gHUD.GetSpriteRect(HUD_camera_rect));
+
+		//Draw the camera reticle (top right)
+			HUD_camera_rect = gHUD.GetSpriteIndex( "camera_rect_tr" );
+			m_hCam1 = gHUD.GetSprite(HUD_camera_rect);
+			SPR_Set(m_hCam1, r, g, b );
+
+			int w,h;
+			w=SPR_Width(m_hCam1, 0)/2;
+			h=SPR_Height(m_hCam1, 0)/2;
+
+			x = ScreenWidth - ScreenWidth/4 - w ;
+			y = ScreenHeight/4;
+		
+			SPR_DrawAdditive( 0,  x, y, &gHUD.GetSpriteRect(HUD_camera_rect));
+
+		//Draw the camera reticle (bottom left)
+			HUD_camera_rect = gHUD.GetSpriteIndex( "camera_rect_bl" );
+			m_hCam1 = gHUD.GetSprite(HUD_camera_rect);
+			SPR_Set(m_hCam1, r, g, b );
+			x = ScreenWidth/4;
+			y = ScreenHeight - ScreenHeight/4 - h;
+		
+			SPR_DrawAdditive( 0,  x, y, &gHUD.GetSpriteRect(HUD_camera_rect));
+
+		//Draw the camera reticle (bottom right)
+			HUD_camera_rect = gHUD.GetSpriteIndex( "camera_rect_br" );
+			m_hCam1 = gHUD.GetSprite(HUD_camera_rect);
+			SPR_Set(m_hCam1, r, g, b );
+			x = ScreenWidth - ScreenWidth/4 - w ;
+			y = ScreenHeight - ScreenHeight/4 - h;
+		
+			SPR_DrawAdditive( 0,  x, y, &gHUD.GetSpriteRect(HUD_camera_rect));
+	}
+
 	if ((viewFlags & 1) && !(viewFlags & 2)) // custom view active, and flag "draw hud" isnt set
 		return 1;
 	

@@ -27,7 +27,6 @@
 #include	"soundent.h"
 #include	"scripted.h"
 #include	"game.h"
-#include	"weapons.h"
 
 #define		SQUID_SPRINT_DIST	256 // how close the squid has to get before starting to sprint and refusing to swerve
 
@@ -152,11 +151,7 @@ void CSquidSpit :: Touch ( CBaseEntity *pOther )
 
 		// make a splat on the wall
 		UTIL_TraceLine( pev->origin, pev->origin + pev->velocity * 10, dont_ignore_monsters, ENT( pev ), &tr );
-
-          	CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-		PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), 4, 0, 0 );
-
-		//UTIL_DecalTrace(&tr, DECAL_SPIT1 + RANDOM_LONG(0,1));
+		UTIL_DecalTrace(&tr, DECAL_SPIT1 + RANDOM_LONG(0,1));
 
 		// make some flecks
 		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, tr.vecEndPos );

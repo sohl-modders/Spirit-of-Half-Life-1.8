@@ -586,6 +586,7 @@ public:
 
 //LRC - for the moment, skymode has only two settings
 #define SKY_OFF 0
+#define SKY_ON_DRAWING  2
 #define SKY_ON  1
 
 typedef struct cl_mirror_s
@@ -628,10 +629,9 @@ public:
 	CShinySurface *m_pShinySurface; //LRC
 	Vector	m_vecSkyPos; //LRC
 	int		m_iSkyMode;  //LRC
+	int		m_iSkyScale;	//AJH Allows parallax for the sky. 0 means no parallax, i.e infinitly large & far away.
 	int m_iCameraMode;//G-Cont. clipping thirdperson camera
-	int m_iLastCameraMode;//save last mode
-	int m_iSkin;//set skin for view weaponmodel
-	int m_iBody;//set body for view weaponmodel
+
 	int m_iFontHeight;
 	int DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int b );
 	int DrawHudString(int x, int y, int iMaxX, char *szString, int r, int g, int b );
@@ -703,17 +703,15 @@ public:
 	int _cdecl MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf);
 	int  _cdecl MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf );
 	int  _cdecl MsgFunc_RainData( const char *pszName, int iSize, void *pbuf ); 		//G-Cont
-    	int  _cdecl MsgFunc_PlayMP3( const char *pszName, int iSize, void *pbuf );		//KILLAR
+	int  _cdecl MsgFunc_PlayMP3( const char *pszName, int iSize, void *pbuf );		//KILLAR
 	int _cdecl MsgFunc_HUDColor(const char *pszName,  int iSize, void *pbuf);		//LRC
 	void _cdecl MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf );		//LRC
 	void _cdecl MsgFunc_KeyedDLight( const char *pszName, int iSize, void *pbuf );		//LRC
 	void _cdecl MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf );		//LRC
 	int  _cdecl MsgFunc_CamData( const char *pszName, int iSize, void *pbuf );		//G-Cont
-	void _cdecl MsgFunc_SetBody( const char *pszName, int iSize, void *pbuf );
-	void _cdecl MsgFunc_SetSkin( const char *pszName, int iSize, void *pbuf );
-	void _cdecl MsgFunc_SetMirror( const char *pszName, int iSize, void *pbuf );
-	void _cdecl MsgFunc_ResetMirror( const char *pszName, int iSize, void *pbuf );
-    	void _cdecl MsgFunc_AddShine( const char *pszName, int iSize, void *pbuf );    		//LRC
+	void _cdecl MsgFunc_AddShine( const char *pszName, int iSize, void *pbuf );    		//LRC
+	int  _cdecl MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf );	//AJH
+	void _cdecl MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf );	//LRC 1.8
 
 	// Screen information
 	SCREENINFO	m_scrinfo;
@@ -739,7 +737,19 @@ extern TeamFortressViewport *gViewPort;
 
 extern int g_iPlayerClass;
 extern int g_iTeamNumber;
+extern int g_iInventory[MAX_ITEMS];	//AJH Inventory system
 extern int g_iUser1;
 extern int g_iUser2;
 extern int g_iUser3;
 
+struct FogSettings
+{
+	float fogColor[3];
+	float startDist;
+	float endDist;
+};
+extern FogSettings g_fog;
+extern FogSettings g_fogPreFade;
+extern FogSettings g_fogPostFade;
+extern float g_fFogFadeDuration;
+extern float g_fFogFadeFraction;

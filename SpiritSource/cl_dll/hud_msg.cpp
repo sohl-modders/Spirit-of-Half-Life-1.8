@@ -23,15 +23,19 @@
 #include "rain.h"
 
 //LRC - the fogging fog
-vec3_t FogColor;
-float g_fStartDist;
-float g_fEndDist;
-//int g_iFinalStartDist; //for fading
-int g_iFinalEndDist;   //for fading
-float g_fFadeDuration; //negative = fading out
+FogSettings g_fog;
+FogSettings g_fogPreFade;
+FogSettings g_fogPostFade;
+float g_fFogFadeDuration;
+float g_fFogFadeFraction;
 
 #define MAX_CLIENTS 32
+
+extern BEAM *pBeam;
+extern BEAM *pBeam2;
 extern rain_properties Rain;
+extern float g_clampMinYaw, g_clampMaxYaw, g_clampMinPitch, g_clampMaxPitch;
+extern float g_clampTurnSpeed;
 
 /// USER-DEFINED SERVER MESSAGE HANDLERS
 
@@ -48,17 +52,18 @@ int CHud :: MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf )
 			pList->p->Reset();
 		pList = pList->pNext;
 	}
-
+		
 	// reset sensitivity
 	m_flMouseSensitivity = 0;
 
 	// reset concussion effect
 	m_iConcussionEffect = 0;
 
-	//LRC - reset fog
+/*	//LRC - reset fog
 	g_fStartDist = 0;
 	g_fEndDist = 0;
-
+	numMirrors = 0;
+*/
 	return 1;
 }
 
@@ -73,8 +78,18 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 {
 //	CONPRINT("MSG:InitHUD");
 	//LRC - clear the fog
-	g_fStartDist = 0;
-	g_fEndDist = 0;
+	g_fog.startDist = -1;
+	g_fog.endDist = -1;
+	g_fog.fogColor[0] = -1;
+	g_fog.fogColor[1] = -1;
+	g_fog.fogColor[2] = -1;
+	//LRC 1.8 - clear view clamps
+	g_clampMinPitch = -90;
+	g_clampMaxPitch = 90;
+	g_clampMinYaw = 0;
+	g_clampMaxYaw = 360;
+	g_clampTurnSpeed = 1E6;
+	numMirrors = 0;
 
 	m_iSkyMode = SKY_OFF; //LRC
 
@@ -87,31 +102,56 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 			pList->p->InitHUDData();
 		pList = pList->pNext;
 	}
+
+	//Probably not a good place to put this.
+	pBeam = pBeam2 = NULL;
 }
 
 //LRC
 void CHud :: MsgFunc_SetFog( const char *pszName, int iSize, void *pbuf )
 {
+//	CONPRINT("MSG:SetFog");
 	BEGIN_READ( pbuf, iSize );
-	FogColor.x = TransformColor ( READ_BYTE() );
-	FogColor.y = TransformColor ( READ_BYTE() );
-	FogColor.z = TransformColor ( READ_BYTE() );
-	//CONPRINT("fog color %f, %f, %f\n", FogColor.x, FogColor.y, FogColor.z );
-	g_fFadeDuration = READ_SHORT();
-	g_fStartDist = READ_SHORT();
-	if (g_fFadeDuration > 0)
+
+	for ( int i = 0; i < 3; i++ )
 	{
-		g_iFinalEndDist = READ_SHORT();
-		g_fEndDist = FOG_LIMIT;
+		g_fogPostFade.fogColor[i] = READ_BYTE();
+
+		if ( g_fog.fogColor[i] >= 0 )
+			g_fogPreFade.fogColor[i] = g_fog.fogColor[i];
+		else
+			g_fogPreFade.fogColor[i] = g_fogPostFade.fogColor[i];
 	}
-	else if (g_fFadeDuration < 0)
-	{
-		g_iFinalEndDist = g_fEndDist = READ_SHORT();
-	}
+
+	g_fFogFadeDuration = READ_SHORT();
+
+	g_fogPostFade.startDist = READ_SHORT();
+	if ( g_fog.startDist >= 0 )
+		g_fogPreFade.startDist = g_fog.startDist;
 	else
+		g_fogPreFade.startDist = g_fogPostFade.startDist;
+
+	g_fogPostFade.endDist = READ_SHORT();
+	if ( g_fog.endDist >= 0 )
+		g_fogPreFade.endDist = g_fog.endDist;
+	else
+		g_fogPreFade.endDist = g_fogPostFade.endDist;
+
+	if ( g_fFogFadeDuration < 0 )
 	{
-		g_fEndDist = READ_SHORT();
+		g_fFogFadeDuration *= -1;
+		g_fogPostFade.startDist = FOG_LIMIT;
+		g_fogPostFade.endDist = FOG_LIMIT;
 	}
+	else if ( g_fFogFadeDuration == 0 )
+	{
+		g_fog.endDist = g_fogPostFade.endDist;
+		for ( int i = 0; i < 3; i++ )
+		{
+			g_fogPreFade.fogColor[i] = g_fog.fogColor[i];
+		}
+	}
+	g_fFogFadeFraction = 0;
 }
 
 //LRC
@@ -181,6 +221,19 @@ void CHud :: MsgFunc_SetSky( const char *pszName, int iSize, void *pbuf )
 	m_vecSkyPos.x = READ_COORD();
 	m_vecSkyPos.y = READ_COORD();
 	m_vecSkyPos.z = READ_COORD();
+	m_iSkyScale = READ_BYTE();
+}
+
+//LRC 1.8
+void CHud :: MsgFunc_ClampView( const char *pszName, int iSize, void *pbuf )
+{
+	BEGIN_READ( pbuf, iSize );
+
+	g_clampMinYaw = READ_SHORT();
+	g_clampMaxYaw = READ_SHORT();
+	g_clampMinPitch = READ_BYTE() - 128;
+	g_clampMaxPitch = READ_BYTE() - 128;
+	*(long*)&g_clampTurnSpeed = READ_LONG();
 }
 
 int CHud :: MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
@@ -190,7 +243,6 @@ int CHud :: MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
 
 	return 1;
 }
-
 
 int CHud :: MsgFunc_Damage(const char *pszName, int iSize, void *pbuf )
 {
@@ -241,11 +293,7 @@ int CHud :: MsgFunc_CamData( const char *pszName, int iSize, void *pbuf ) // rai
 	BEGIN_READ( pbuf, iSize );
 		gHUD.viewEntityIndex = READ_SHORT();
 		gHUD.viewFlags = READ_SHORT();
-
-	if(gHUD.viewFlags) m_iCameraMode = 1;
-	else m_iCameraMode = m_iLastCameraMode;
-	//CONPRINT("Current Mode is %s\n", gHUD.m_iCameraMode? "thirdperson" : "firstperson");
-	//CONPRINT("Last Mode is %s\n", gHUD.m_iLastCameraMode? "thirdperson" : "firstperson");
+//	gEngfuncs.Con_Printf( "Got view entity with index %i\n", gHUD.viewEntityIndex );
 	return 1;
 }
 
@@ -260,68 +308,22 @@ int CHud :: MsgFunc_RainData( const char *pszName, int iSize, void *pbuf )
 		Rain.randY =			READ_COORD();
 		Rain.weatherMode =		READ_SHORT();
 		Rain.globalHeight =		READ_COORD();
-		
 	return 1;
 }
 
-void CHud :: MsgFunc_SetBody( const char *pszName, int iSize, void *pbuf )
+int CHud :: MsgFunc_Inventory( const char *pszName, int iSize, void *pbuf ) //AJH inventory system
 {
 	BEGIN_READ( pbuf, iSize );
-	gHUD.m_iBody = READ_BYTE();
-	cl_entity_s *view = gEngfuncs.GetViewModel();
-	view->curstate.body = gHUD.m_iBody;
-	//gEngfuncs.pfnWeaponAnim( 2, gHUD.m_iBody );//UNDONE: custom frame for view model don't working
-}
+		int i = READ_SHORT();
 
-void CHud :: MsgFunc_SetSkin( const char *pszName, int iSize, void *pbuf )
-{
-	BEGIN_READ( pbuf, iSize );
-	gHUD.m_iSkin = READ_BYTE();
-	cl_entity_s *view = gEngfuncs.GetViewModel();
-	view->curstate.skin = gHUD.m_iSkin;
-}
-
-void CHud :: MsgFunc_SetMirror( const char *pszName, int iSize, void *pbuf )
-{
-	vec3_t origin;
-	bool bNew = true;
-
-	BEGIN_READ( pbuf, iSize );
-	origin.x   = READ_COORD();
-	origin.y   = READ_COORD();
-	origin.z   = READ_COORD();	
-	int dist   = READ_SHORT();
-	int type   = READ_BYTE();
-	int state	 = READ_BYTE();
-
-	if (gHUD.numMirrors)
-	{
-		for (int ic=0; ic < 32; ic++)
-		{
-			if (gHUD.Mirrors[ic].origin == origin)
-			{
-		         		gHUD.Mirrors[ic].enabled = state;
-				bNew = false;
-				break;
+		if (i==0){ //We've died (or got told to lose all items) so remove inventory.
+			for (i=0;i<MAX_ITEMS;i++){
+				g_iInventory[i]=0;
 			}
-		}	
-	}
-	if (bNew)
-	{
-		if (gHUD.numMirrors > 32) CONPRINT("ERROR: Can't register mirror, maximum 32 allowed!\n");
-		else
-         		{
-			gHUD.Mirrors[gHUD.numMirrors].origin = origin;
-	         		gHUD.Mirrors[gHUD.numMirrors].type = type;
-	        		gHUD.Mirrors[gHUD.numMirrors].enabled = state;
-	        		gHUD.Mirrors[gHUD.numMirrors].radius = dist;
-	        		gHUD.numMirrors++;
+		}else
+		{
+			i-=1;	// subtract one so g_iInventory[0] can be used. (lowest ITEM_* is defined as '1')
+			g_iInventory[i] = READ_SHORT();
 		}
-	}
-}
-
-void CHud :: MsgFunc_ResetMirror( const char *pszName, int iSize, void *pbuf )
-{
-	CONPRINT("mirrors reset\n");
-	numMirrors = 0;
+	return 1;
 }

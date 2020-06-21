@@ -86,10 +86,15 @@ enum sbar_data
 };
 
 #define CHAT_INTERVAL 1.0f
-
+class CItemCamera;//AJH
 class CBasePlayer : public CBaseMonster
 {
 public:
+	
+	entvars_t*			m_pevInflictor; //AJH used for time based damage to remember inflictor
+										//m_hActivator remembers activator
+	CItemCamera*		m_pItemCamera;//AJH Remember that we have a camera
+
 	int					random_seed;    // See that is shared between client & server for shared weapons code
 
 	int					m_iPlayerSound;// the index of the sound list slot reserved for this player
@@ -300,6 +305,11 @@ public:
 	int GetCustomDecalFrames( void );
 
 	void CBasePlayer::TabulateAmmo( void );
+
+	float m_flStartCharge;
+	float m_flAmmoStartCharge;
+	float m_flPlayAftershock;
+	float m_flNextAmmoBurn;// while charging, when to absorb another unit of player's ammo?
 	
 	//Player ID
 	void InitStatusBar( void );
@@ -313,7 +323,7 @@ public:
 	int		viewEntity; // string
 	int		viewFlags;	// 1-active, 2-draw hud
 	int		viewNeedsUpdate; // precache sets to 1, UpdateClientData() sets to 0	
-	float 		m_flNextChatTime;
+	float m_flNextChatTime;
 	int	Rain_dripsPerSecond;
 	float	Rain_windX, Rain_windY;
 	float	Rain_randX, Rain_randY;
@@ -336,9 +346,7 @@ public:
 
 extern int	gmsgHudText;
 extern int	gmsgParticle; // LRC
-extern int	gmsgSetBody;
-extern int	gmsgSetSkin;
-extern int	gmsgSetMirror;
+extern int	gmsgInventory;	//AJH
 extern BOOL gInitHUD;
 
 #endif // PLAYER_H

@@ -20,6 +20,10 @@
 
 */
 
+//Compile Options
+//#define USE_QUEUEITEM
+//End Compile Options
+
 #include "extdll.h"
 #include "util.h"
 
@@ -37,6 +41,8 @@
 #include "hltv.h"
 #include "effects.h" //LRC
 #include "movewith.h" //LRC
+#include "items.h" //AJH Inventory system
+#include "locus.h" //LRC 1.8
 
 // #define DUCKFIX
 
@@ -103,7 +109,6 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, m_lastDamageAmount, FIELD_INTEGER ),
 
 	DEFINE_ARRAY( CBasePlayer, m_rgpPlayerItems, FIELD_CLASSPTR, MAX_ITEM_TYPES ),
-	DEFINE_ARRAY( CBasePlayer, m_szAnimExtention, FIELD_CHARACTER, 32),
 	DEFINE_FIELD( CBasePlayer, m_pActiveItem, FIELD_CLASSPTR ),
 	DEFINE_FIELD( CBasePlayer, m_pLastItem, FIELD_CLASSPTR ),
 	DEFINE_FIELD( CBasePlayer, m_pNextItem, FIELD_CLASSPTR ),
@@ -131,6 +136,11 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	DEFINE_FIELD( CBasePlayer, viewFlags, FIELD_INTEGER),
 	DEFINE_FIELD( CBasePlayer, viewNeedsUpdate, FIELD_INTEGER),
 
+	//AJH
+	DEFINE_FIELD( CBasePlayer, m_pItemCamera, FIELD_CLASSPTR),			// Pointer to the first item_camera a player has
+	DEFINE_ARRAY( CBasePlayer, m_rgItems, FIELD_INTEGER, MAX_ITEMS ),	// The inventory status array
+	
+	//G-Cont
 	DEFINE_FIELD( CBasePlayer, Rain_dripsPerSecond, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayer, Rain_windX, FIELD_FLOAT ),
 	DEFINE_FIELD( CBasePlayer, Rain_windY, FIELD_FLOAT ),
@@ -152,7 +162,7 @@ TYPEDESCRIPTION	CBasePlayer::m_playerSaveData[] =
 	//DEFINE_FIELD( CBasePlayer, m_vecFogColor, FIELD_VECTOR ),
 
 	//DEFINE_FIELD( CBasePlayer, m_fDeadTime, FIELD_FLOAT ), // only used in multiplayer games
-	//DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games
+	DEFINE_FIELD( CBasePlayer, m_fGameHUDInitialized, FIELD_INTEGER ), // only used in multiplayer games //AJH Not true anymore, used in g-conts modified camera code as it can draw the hud.
 	//DEFINE_FIELD( CBasePlayer, m_flStopExtraSoundTime, FIELD_TIME ),
 	//DEFINE_FIELD( CBasePlayer, m_fKnownItem, FIELD_INTEGER ), // reset to zero on load
 	//DEFINE_FIELD( CBasePlayer, m_iPlayerSound, FIELD_INTEGER ),	// Don't restore, set in Precache()
@@ -191,10 +201,12 @@ int gmsgResetHUD = 0;
 int gmsgInitHUD = 0;
 int gmsgSetFog = 0; //LRC
 int gmsgKeyedDLight = 0;//LRC
+int gmsgKeyedELight = 0;//LRC
 int gmsgSetSky = 0;		//LRC
 int gmsgHUDColor = 0;	//LRC
 int gmsgAddShine = 0;   // LRC
 int gmsgParticle = 0; // LRC
+int gmsgClampView = 0; //LRC 1.8
 int gmsgPlayMP3 = 0; //Killar
 int gmsgShowGameTitle = 0;
 int gmsgCurWeapon = 0;
@@ -229,10 +241,7 @@ int gmsgStatusText = 0;
 int gmsgStatusValue = 0;
 int gmsgCamData; // for trigger_viewset
 int gmsgRainData = 0;
-int gmsgSetBody = 0;//change body for view weapon model
-int gmsgSetSkin = 0;//change skin for view weapon model
-int gmsgSetMirror = 0;//set mirror
-int gmsgResetMirror = 0;
+int gmsgInventory = 0; //AJH Inventory system
 
 void LinkUserMessages( void )
 {
@@ -260,10 +269,12 @@ void LinkUserMessages( void )
 
 	gmsgSetFog = REG_USER_MSG("SetFog", 9 );			//LRC
 	gmsgKeyedDLight = REG_USER_MSG("KeyedDLight", -1 );	//LRC
-	gmsgSetSky = REG_USER_MSG( "SetSky", 7 );			//LRC
+	gmsgKeyedELight = REG_USER_MSG("KeyedELight", -1 );	//LRC
+	gmsgSetSky = REG_USER_MSG( "SetSky", 8 );			//LRC //AJH changed size from 7 to 8 to support skybox scale
 	gmsgHUDColor = REG_USER_MSG( "HUDColor", 4 );		//LRC
-	gmsgAddShine = REG_USER_MSG( "AddShine", -1 );      //LRC
 	gmsgParticle = REG_USER_MSG( "Particle", -1);		//LRC
+	gmsgAddShine = REG_USER_MSG( "AddShine", -1 );      //LRC
+	gmsgClampView = REG_USER_MSG( "ClampView", 10 );	//LRC 1.8
 
 	gmsgShowGameTitle = REG_USER_MSG("GameTitle", 1);
 	gmsgDeathMsg = REG_USER_MSG( "DeathMsg", -1 );
@@ -290,10 +301,7 @@ void LinkUserMessages( void )
 	gmsgCamData = REG_USER_MSG("CamData", -1);
 	gmsgPlayMP3 = REG_USER_MSG("PlayMP3", -1);	//Killar
 	gmsgRainData = REG_USER_MSG("RainData", 16);
-	gmsgSetBody = REG_USER_MSG("SetBody", 1);
-	gmsgSetSkin = REG_USER_MSG("SetSkin", 1);
-	gmsgSetMirror = REG_USER_MSG("SetMirror", 10);
-	gmsgResetMirror = REG_USER_MSG("ResetMirror", 0);
+	gmsgInventory = REG_USER_MSG("Inventory", -1);	//AJH Inventory system
 }
 
 LINK_ENTITY_TO_CLASS( player, CBasePlayer );
@@ -608,6 +616,11 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 
 	while (fTookDamage && (!ftrivial || (bitsDamage & DMG_TIMEBASED)) && ffound && bitsDamage)
 	{
+		if (bitsDamage & DMG_TIMEBASED){//AJH give timebased damage frags to activator
+			m_hActivator = pAttacker; 
+			m_pevInflictor = pevInflictor;
+		}
+
 		ffound = FALSE;
 
 		if (bitsDamage & DMG_CLUB)
@@ -909,6 +922,7 @@ void CBasePlayer::RemoveAllItems( BOOL removeSuit )
 		WRITE_BYTE(0);
 		WRITE_BYTE(0);
 	MESSAGE_END();
+
 }
 
 //LRC
@@ -1058,8 +1072,9 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	// Holster weapon immediately, to allow it to cleanup
 	if ( m_pActiveItem )
 		m_pActiveItem->Holster( );
-
+#ifdef USE_QUEUEITEM
 	m_pNextItem = NULL;
+#endif
 
 	g_pGameRules->PlayerKilled( this, pevAttacker, g_pevLastInflictor );
 
@@ -1083,8 +1098,6 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	m_iRespawnFrames = 0;
 
 	pev->modelindex = g_ulModelIndexPlayer;    // don't use eyes
-
-	if(pev->velocity.x > 40 || pev->velocity.y > 40 || pev->velocity.z > 40) pev->renderfx = kRenderFxDeadPlayer;
 
 	pev->deadflag		= DEAD_DYING;
 	pev->movetype		= MOVETYPE_TOSS;
@@ -1119,11 +1132,14 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-	UTIL_ScreenFade( this, Vector(128,0,0), 6, 15, 255, FFADE_OUT | FFADE_MODULATE | FFADE_STAYOUT );
+	//I don't _think_ we need to anything about fog here. - LRC
+
+	// UNDONE: Put this in, but add FFADE_PERMANENT and make fade time 8.8 instead of 4.12
+	// UTIL_ScreenFade( edict(), Vector(128,0,0), 6, 15, 255, FFADE_OUT | FFADE_MODULATE );
 
 	if ( ( pev->health < -40 && iGib != GIB_NEVER ) || iGib == GIB_ALWAYS )
 	{
-		pev->solid	= SOLID_NOT;
+		pev->solid			= SOLID_NOT;
 		GibMonster();	// This clears pev->model
 		pev->effects |= EF_NODRAW;
 		return;
@@ -1133,7 +1149,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 
 	pev->angles.x = 0;
 	pev->angles.z = 0;
-	
+
 	SetThink(&CBasePlayer::PlayerDeathThink);
 	SetNextThink( 0.1 );
 }
@@ -2220,15 +2236,20 @@ void CBasePlayer::CheckTimeBasedDamage()
 				bDuration = PARALYZE_DURATION;
 				break;
 			case itbd_NerveGas:
-//				TakeDamage(pev, pev, NERVEGAS_DAMAGE, DMG_GENERIC);
-				bDuration = NERVEGAS_DURATION;
+				if (CVAR_GET_FLOAT ("timed_damage") != 0) //AJH re enable time based Nervegas/radiation
+					TakeDamage(m_pevInflictor, m_hActivator->pev, NERVEGAS_DAMAGE, DMG_GENERIC);
+					//AJH Use the activator of the trigger_hurt as attacker, and the trigger_hurt as the inflictor
+					bDuration = NERVEGAS_DURATION;
 				break;
 			case itbd_Poison:
-				TakeDamage(pev, pev, POISON_DAMAGE, DMG_GENERIC);
+					TakeDamage(m_pevInflictor, m_hActivator->pev, POISON_DAMAGE, DMG_GENERIC); 
+					//AJH Use the activator of the trigger_hurt as attacker, and the trigger_hurt as the inflictor
 				bDuration = POISON_DURATION;
 				break;
 			case itbd_Radiation:
-//				TakeDamage(pev, pev, RADIATION_DAMAGE, DMG_GENERIC);
+					if (CVAR_GET_FLOAT ("timed_damage") != 0) //AJH re enable time based Nervegas/radiation
+					TakeDamage(m_pevInflictor, m_hActivator->pev, RADIATION_DAMAGE, DMG_GENERIC);
+				//AJH Use the activator of the trigger_hurt as attacker, and the trigger_hurt as the inflictor
 				bDuration = RADIATION_DURATION;
 				break;
 			case itbd_DrownRecover:
@@ -2269,10 +2290,30 @@ void CBasePlayer::CheckTimeBasedDamage()
 					{
 						m_rgbTimeBasedDamage[i] = 0;
 						m_rgItems[ITEM_ANTIDOTE]--;
+
+						MESSAGE_BEGIN( MSG_ONE, gmsgInventory, NULL, pev );//AJH msg change inventory
+							WRITE_SHORT( (ITEM_ANTIDOTE) );						//which item to change
+							WRITE_SHORT( m_rgItems[ITEM_ANTIDOTE] );		//set counter to this ammount
+						MESSAGE_END();
+
 						SetSuitUpdate("!HEV_HEAL4", FALSE, SUIT_REPEAT_OK);
 					}
 				}
+				else if ((i == itbd_Radiation) && (m_rgbTimeBasedDamage[i] < RADIATION_DURATION)) //AJH added anti radiation syringe
+				{
+					if (m_rgItems[ITEM_ANTIRAD])
+					{
+						m_rgbTimeBasedDamage[i] = 0;
+						m_rgItems[ITEM_ANTIRAD]--;
 
+						MESSAGE_BEGIN( MSG_ONE, gmsgInventory, NULL, pev );//AJH msg change inventory
+							WRITE_SHORT( (ITEM_ANTIRAD) );						//which item to change
+							WRITE_SHORT( m_rgItems[ITEM_ANTIRAD] );		//set counter to this ammount
+						MESSAGE_END();
+
+						SetSuitUpdate("!HEV_HEAL5", FALSE, SUIT_REPEAT_OK);
+					}
+				}
 
 				// decrement damage duration, detect when done.
 				if (!m_rgbTimeBasedDamage[i] || --m_rgbTimeBasedDamage[i] == 0)
@@ -2794,7 +2835,74 @@ void CBasePlayer::PostThink()
 	// Track button info so we can detect 'pressed' and 'released' buttons next frame
 	m_afButtonLast = pev->button;
 
-pt_end:	return;
+pt_end:
+#if defined( CLIENT_WEAPONS )
+		// Decay timers on weapons
+	// go through all of the weapons and make a list of the ones to pack
+	for ( int i = 0 ; i < MAX_ITEM_TYPES ; i++ )
+	{
+		if ( m_rgpPlayerItems[ i ] )
+		{
+			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[ i ];
+
+			while ( pPlayerItem )
+			{
+				CBasePlayerWeapon *gun;
+
+				gun = (CBasePlayerWeapon *)pPlayerItem->GetWeaponPtr();
+
+				if ( gun && gun->UseDecrement() )
+				{
+					gun->m_flNextPrimaryAttack		= max( gun->m_flNextPrimaryAttack - gpGlobals->frametime, -1.0 );
+					gun->m_flNextSecondaryAttack	= max( gun->m_flNextSecondaryAttack - gpGlobals->frametime, -0.001 );
+
+					if ( gun->m_flTimeWeaponIdle != 1000 )
+					{
+						gun->m_flTimeWeaponIdle		= max( gun->m_flTimeWeaponIdle - gpGlobals->frametime, -0.001 );
+					}
+
+					if ( gun->pev->fuser1 != 1000 )
+					{
+						gun->pev->fuser1	= max( gun->pev->fuser1 - gpGlobals->frametime, -0.001 );
+					}
+
+					// Only decrement if not flagged as NO_DECREMENT
+//					if ( gun->m_flPumpTime != 1000 )
+				//	{
+				//		gun->m_flPumpTime	= max( gun->m_flPumpTime - gpGlobals->frametime, -0.001 );
+				//	}
+
+				}
+
+				pPlayerItem = pPlayerItem->m_pNext;
+			}
+		}
+	}
+
+	m_flNextAttack -= gpGlobals->frametime;
+	if ( m_flNextAttack < -0.001 )
+		m_flNextAttack = -0.001;
+
+	if ( m_flNextAmmoBurn != 1000 )
+	{
+		m_flNextAmmoBurn -= gpGlobals->frametime;
+
+		if ( m_flNextAmmoBurn < -0.001 )
+			m_flNextAmmoBurn = -0.001;
+	}
+
+	if ( m_flAmmoStartCharge != 1000 )
+	{
+		m_flAmmoStartCharge -= gpGlobals->frametime;
+
+		if ( m_flAmmoStartCharge < -0.001 )
+			m_flAmmoStartCharge = -0.001;
+	}
+
+
+#else
+	return;
+#endif
 }
 
 
@@ -2948,7 +3056,7 @@ void CBasePlayer::Spawn( void )
 	m_bitsDamageType	= 0;
 	m_afPhysicsFlags	= 0;
 	m_fLongJump			= FALSE;// no longjump module.
-	Rain_dripsPerSecond = 0;
+/*	Rain_dripsPerSecond = 0;
 	Rain_windX = 0;
 	Rain_windY = 0;
 	Rain_randX = 0;
@@ -2960,7 +3068,7 @@ void CBasePlayer::Spawn( void )
 	Rain_ideal_randY = 0;
 	Rain_endFade = 0;
 	Rain_nextFadeUpdate = 0;
-
+*/
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "slj", "0" );
 	g_engfuncs.pfnSetPhysicsKeyValue( edict(), "hl", "1" );
 
@@ -2998,7 +3106,7 @@ void CBasePlayer::Spawn( void )
 	else
 		UTIL_SetSize(pev, VEC_HULL_MIN, VEC_HULL_MAX);
 
-    	pev->view_ofs = VEC_VIEW;
+    pev->view_ofs = VEC_VIEW;
 	viewEntity = 0;
 	viewFlags = 0;
 	Precache();
@@ -3028,6 +3136,19 @@ void CBasePlayer::Spawn( void )
 	m_lastx = m_lasty = 0;
 
 	m_flNextChatTime = gpGlobals->time;
+
+	for (int j=0;j<MAX_ITEMS;j++){	//AJH remove all inventory items
+		m_rgItems[j]=0;
+	}
+
+	MESSAGE_BEGIN(MSG_ONE,gmsgInventory,NULL,pev); //AJH let client know he's lost items
+		WRITE_SHORT(0); //delete all items			//For some reason this doesn't work after a map change??!
+	MESSAGE_END();
+
+	if (m_pItemCamera){	//AJH If we have any cameras in our inventory, reset them all.
+		m_pItemCamera->StripFromPlayer();
+		m_pItemCamera = NULL;
+	}
 
 	g_pGameRules->PlayerSpawn( this );
 }
@@ -3149,6 +3270,14 @@ int CBasePlayer::Restore( CRestore &restore )
 	}
 
 	RenewItems();
+
+#if defined( CLIENT_WEAPONS )
+	// HACK:	This variable is saved/restored in CBaseMonster as a time variable, but we're using it
+	//			as just a counter.  Ideally, this needs its own variable that's saved as a plain float.
+	//			Barring that, we clear it out here instead of using the incorrect restored time value.
+	m_flNextAttack = UTIL_WeaponTimeBase();
+#endif
+
 	return status;
 }
 
@@ -3190,8 +3319,11 @@ void CBasePlayer::SelectNextItem( int iItem )
 	{
 		m_pActiveItem->Holster( );
 	}
-
+#ifdef USE_QUEUEITEM
 	QueueItem(pItem);
+#else
+	m_pActiveItem = pItem;
+#endif
 
 	if (m_pActiveItem)
 	{
@@ -3202,6 +3334,7 @@ void CBasePlayer::SelectNextItem( int iItem )
 
 void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
 {
+#ifdef USE_QUEUEITEM
 	if(!m_pActiveItem)// no active weapon
 	{
 		m_pActiveItem = pItem;
@@ -3213,6 +3346,7 @@ void CBasePlayer::QueueItem(CBasePlayerItem *pItem)
 		m_pActiveItem = NULL;// clear current
 	}
 	m_pNextItem = pItem;// add item to queue
+#endif
 }
 
 void CBasePlayer::SelectItem(const char *pstr)
@@ -3252,8 +3386,12 @@ void CBasePlayer::SelectItem(const char *pstr)
 	// FIX, this needs to queue them up and delay
 	if (m_pActiveItem)
 		m_pActiveItem->Holster( );
-
+#ifdef USE_QUEUEITEM
 	QueueItem(pItem);
+#else
+	m_pLastItem=m_pActiveItem;
+	m_pActiveItem=pItem;
+#endif
 
 	if (m_pActiveItem)
 	{
@@ -3281,8 +3419,13 @@ void CBasePlayer::SelectLastItem(void)
 	if (m_pActiveItem)
 		m_pActiveItem->Holster( );
 
+#ifdef USE_QUEUEITEM
 	QueueItem(m_pLastItem);
-
+#else
+	CBasePlayerItem *pTemp = m_pActiveItem;
+	m_pActiveItem = m_pLastItem;
+	m_pLastItem = pTemp;
+#endif
 	if (m_pActiveItem)
 	{
 		m_pActiveItem->Deploy( );
@@ -3411,9 +3554,7 @@ void CBloodSplat::Spray ( void )
 		UTIL_MakeVectors(pev->angles);
 		UTIL_TraceLine ( pev->origin, pev->origin + gpGlobals->v_forward * 128, ignore_monsters, pev->owner, & tr);
 
-         		CBaseEntity *pHit = CBaseEntity::Instance( tr.pHit );
-		PLAYBACK_EVENT_FULL( FEV_RELIABLE|FEV_GLOBAL, edict(), m_usDecals, 0.0, (float *)&tr.vecEndPos, (float *)&g_vecZero, 0.0, 0.0, pHit->entindex(), 1, 0, 0 );
-		//UTIL_BloodDecalTrace( &tr, BLOOD_COLOR_RED );
+		UTIL_BloodDecalTrace( &tr, BLOOD_COLOR_RED );
 	}
 	SetThink(&CBloodSplat:: SUB_Remove );
 	SetNextThink( 0.1 );
@@ -3663,6 +3804,42 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 				FireTargets(impulsetarget, this, this, USE_OFF, 0);
 			break;
 		}
+		case 93: //AJH - send USE_TOGGLE
+		{
+			pEntity = FindEntityForward( this );
+			if (pEntity)
+				pEntity->Use( this, this, USE_TOGGLE, 0);
+			break;
+		}
+		case 94: //AJH - send USE_ON
+		{
+			pEntity = FindEntityForward( this );
+			if (pEntity)
+				pEntity->Use( this, this, USE_ON, 0);
+			break;
+		}
+		case 95: //AJH - send USE_OFF
+		{
+			pEntity = FindEntityForward( this );
+			if (pEntity)
+				pEntity->Use( this, this, USE_OFF, 0);
+			break;
+		}
+	/*	case 96: //AJH - send USE_KILL				//AJH this doesn't work due to directly calling
+		{											//the target entities use function instead of
+			pEntity = FindEntityForward( this );	//calling FireTargets.
+			if (pEntity)
+				pEntity->Use( this, this, USE_KILL, 0);
+			break;
+		}
+	*/	case 97: //AJH - send USE_SPAWN
+		{
+			pEntity = FindEntityForward( this );
+			if (pEntity)
+				pEntity->Use( this, this, USE_SPAWN, 0);
+			break;
+		}
+
 	case 101:
 		gEvilImpulse101 = TRUE;
 		GiveNamedItem( "item_suit" );
@@ -3780,7 +3957,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		break;
 	case	196:// show shortest paths for entire level to nearest node
 		{
-			Create("node_viewer_fly", pev->origin, pev->angles);
+			Create("node_viewer_large", pev->origin, pev->angles);
 		}
 		break;
 	case	197:// show shortest paths for entire level to nearest node
@@ -3971,9 +4148,15 @@ Called every frame by the player PreThink
 */
 void CBasePlayer::ItemPreFrame()
 {
-	if ( gpGlobals->time < m_flNextAttack )
+#if defined( CLIENT_WEAPONS )
+    if ( m_flNextAttack > 0 )
+#else
+    if ( gpGlobals->time < m_flNextAttack )
+#endif
+	{
 		return;
-
+	}
+#ifdef USE_QUEUEITEM
 	if (!m_pActiveItem)// XWider
 	{
 		if(m_pNextItem)
@@ -3984,7 +4167,7 @@ void CBasePlayer::ItemPreFrame()
 			m_pNextItem = NULL;
 		}
 	}
-
+#endif
 	if (!m_pActiveItem)
 		return;
 
@@ -4004,13 +4187,22 @@ void CBasePlayer::ItemPostFrame()
 	static int fInSelect = FALSE;
 
 	// check if the player is using a tank
-	if ( m_pTank != NULL ) return;
+	if ( m_pTank != NULL )
+		return;
 
-	if ( gpGlobals->time < m_flNextAttack ) return;
+#if defined( CLIENT_WEAPONS )
+    if ( m_flNextAttack > 0 )
+#else
+    if ( gpGlobals->time < m_flNextAttack )
+#endif
+	{
+		return;
+	}
 
 	ImpulseCommands();
 
-	if (!m_pActiveItem) return;
+	if (!m_pActiveItem)
+		return;
 
 	m_pActiveItem->ItemPostFrame( );
 }
@@ -4079,16 +4271,27 @@ reflecting all of the HUD state info.
 */
 void CBasePlayer :: UpdateClientData( void )
 {
-	if (m_fInitHUD)
+	if (m_fInitHUD) //AJH The HUD needs (re)initialising
 	{
 		m_fInitHUD = FALSE;
+		
+		if(gInitHUD) //AJH This is the first initialisation this level.
+		{
 		gInitHUD = FALSE;
+
+			//AJH Reset the FOG
+			MESSAGE_BEGIN( MSG_ONE, gmsgSetFog, NULL, pev );
+				WRITE_BYTE ( 0.0 );
+				WRITE_BYTE ( 0.0 );
+				WRITE_BYTE ( 0.0 );
+				WRITE_SHORT ( 0 );
+				WRITE_SHORT ( 0 );
+				WRITE_SHORT ( 0 );
+			MESSAGE_END();
+		}
 
 		MESSAGE_BEGIN( MSG_ONE, gmsgResetHUD, NULL, pev );
 			WRITE_BYTE( 0 );
-		MESSAGE_END();
-
-		MESSAGE_BEGIN( MSG_ONE, gmsgResetMirror, NULL, pev );
 		MESSAGE_END();
 
 		if ( !m_fGameHUDInitialized )
@@ -4104,24 +4307,12 @@ void CBasePlayer :: UpdateClientData( void )
 			}
 		}
 
-		//update all mirrors
-		edict_t *pFind; 
-          	int numMirrors = 0;
-	
-		pFind = FIND_ENTITY_BY_CLASSNAME( NULL, "env_mirror" );
-          
-		while ( !FNullEnt( pFind ) )
+		for (int i=0;i<MAX_ITEMS;i++) //AJH 
 		{
-			CBaseEntity *pMirror = CBaseEntity::Instance( pFind );
-                    
-                    	if(numMirrors > 32) break;
-			if ( pMirror )
-			{
-				pMirror->Think();
-				pMirror->SetNextThink(0.01);
-				numMirrors++;
-			}
-			pFind = FIND_ENTITY_BY_CLASSNAME( pFind, "env_mirror" );
+			MESSAGE_BEGIN(MSG_ONE,gmsgInventory,NULL,pev); // let client know which items he has
+				WRITE_SHORT(i); //which item we have
+				WRITE_SHORT(m_rgItems[i]);
+			MESSAGE_END();
 		}
 
 		FireTargets( "game_playerspawn", this, this, USE_TOGGLE, 0 );
@@ -4147,37 +4338,21 @@ void CBasePlayer :: UpdateClientData( void )
 		// cache FOV change at end of function, so weapon updates can see that FOV has changed
 	}
 
-	if (viewNeedsUpdate != 0)
+	if (viewNeedsUpdate != 0 && m_fGameHUDInitialized)
 	{
+		CBaseEntity *pViewEnt = UTIL_FindEntityByTargetname(NULL,STRING(viewEntity));
 		int indexToSend;
-		//try to find entity by targetname
-		CBaseEntity *pViewEnt = UTIL_FindEntityByString( NULL, "targetname", STRING(viewEntity) );
-
 		if (!FNullEnt(pViewEnt))
 		{
 			indexToSend = pViewEnt->entindex();
-			if(pViewEnt->pev->flags & FL_MONSTER) viewFlags |= MONSTER_VIEW;
-			ALERT(at_aiconsole, "Find by name : activated with index %i and flags %i\n", indexToSend, viewFlags);
+			ALERT(at_aiconsole, "View data : activated with index %i and flags %i\n", indexToSend, viewFlags);
 		}
 		else
-		{	//try to find entity by classname
-			CBaseEntity *pViewEnt = UTIL_FindEntityByString( NULL, "classname", STRING(viewEntity) );
-
-			if (!FNullEnt(pViewEnt))
-			{
-				indexToSend = pViewEnt->entindex();
-
-				//simple check for monster
-				if(pViewEnt->pev->flags & FL_MONSTER) viewFlags |= MONSTER_VIEW;
-				ALERT(at_aiconsole, "Find by class : activated with index %i and flags %i\n", indexToSend, viewFlags);
-			}
-			else
-			{
-				indexToSend = 0;
-				viewFlags = 0; // clear possibly ACTIVE flag
-				ALERT(at_aiconsole, "View data : deactivated\n");
-			}
-		}
+		{
+			indexToSend = 0;
+			viewFlags = 0; // clear possibly ACTIVE flag
+			ALERT(at_aiconsole, "View data : deactivated\n");
+		}				
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgCamData, NULL, pev);
 			WRITE_SHORT( indexToSend );
@@ -4536,7 +4711,6 @@ void CBasePlayer :: EnableControl(BOOL fControl)
 	else
 		pev->flags &= ~FL_FROZEN;
 }
-
 
 #define DOT_1DEGREE   0.9998476951564
 #define DOT_2DEGREE   0.9993908270191
@@ -4959,7 +5133,7 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 	{
 		m_pActiveItem->Holster( );
 	}
-
+#ifdef USE_QUEUEITEM
 	QueueItem(pWeapon);
 
 	if (m_pActiveItem)// XWider: QueueItem sets it if we have no current weapopn
@@ -4967,7 +5141,10 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 		m_pActiveItem->Deploy( );
 		m_pActiveItem->UpdateItemInfo( );
 	}
-
+#else
+	m_pActiveItem = pWeapon;
+	pWeapon->Deploy( );
+#endif
 	return TRUE;
 }
 
@@ -5263,12 +5440,14 @@ void CRevertSaved :: LoadThink( void )
 // Trigger to disable a player
 //=========================================================
 #define SF_FREEZE_LOCUS 1
+#define SF_DONTFREEZE 2
+#define SF_ACTIVE 0x800000
 
 class CPlayerFreeze:public CBaseDelay
 {
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void Think( void );
-	STATE GetState( void ) { return m_hActivator == NULL? STATE_OFF: STATE_ON; }
+	STATE GetState( void ) { return pev->spawnflags & SF_ACTIVE? STATE_ON: STATE_OFF; }
 };
 
 void CPlayerFreeze::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -5278,28 +5457,104 @@ void CPlayerFreeze::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 		pActivator = UTIL_FindEntityByClassname(NULL, "player");
 	}
 
+	float turnSpeed = 1E6;
+
 	if (pActivator && pActivator->pev->flags & FL_CLIENT)
 	{
-		if (!ShouldToggle(useType, pActivator->pev->flags & FL_FROZEN))
-			return;
+//		if (!ShouldToggle(useType, pActivator->pev->flags & FL_FROZEN))
+//			return;
 
-		if (pActivator->pev->flags & FL_FROZEN)
+		if ((pev->spawnflags & SF_ACTIVE && useType == USE_TOGGLE) || useType == USE_OFF)
 		{
 			// unfreeze him
-			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(TRUE);
-			m_hActivator = NULL;
-			DontThink();
+			if (!(pev->spawnflags & SF_DONTFREEZE))
+			{
+				((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(TRUE);
+				m_hActivator = NULL;
+				DontThink();
+			}
+
+			//unclamp his view
+			MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+				WRITE_SHORT(0);
+				WRITE_SHORT(360);
+				WRITE_BYTE(0);
+				WRITE_BYTE(255);
+				WRITE_LONG(*(long*)&turnSpeed);
+			MESSAGE_END();
+
+			pev->spawnflags &= ~SF_ACTIVE;
 		}
-		else
+		else if ((!(pev->spawnflags & SF_ACTIVE) && useType == USE_TOGGLE) || useType == USE_ON)
 		{
 			// freeze him
-			((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(FALSE);
+			if (!(pev->spawnflags & SF_DONTFREEZE))
+			{
+				((CBasePlayer *)((CBaseEntity *)pActivator))->EnableControl(FALSE);
+			}
+
+			float yawRange = CalcLocus_Number( pActivator, STRING(pev->noise));
+			float pitchUpRange = CalcLocus_Number( pActivator, STRING(pev->noise1));
+			float pitchDownRange;
+			if ( FStringNull(pev->noise2) )
+				pitchDownRange = pitchUpRange;
+			else
+				pitchDownRange = CalcLocus_Number( pActivator, STRING(pev->noise2));
+
+			if ( yawRange < 360 || pitchUpRange < 90 || pitchDownRange < 90 )
+			{
+				Vector clampTargetDir = CalcLocus_Velocity( this, pActivator, STRING(pev->netname) );
+				Vector clampTargetAngle = UTIL_VecToAngles( clampTargetDir );
+
+				if ( !FStringNull(pev->noise3) )
+					turnSpeed = CalcLocus_Number( pActivator, STRING(pev->noise3));
+
+				// clamp max values
+				if (yawRange > 360) yawRange = 360;
+				if (pitchUpRange > 90) pitchUpRange = 90;
+				if (pitchDownRange > 90) pitchDownRange = 90;
+
+				if ( clampTargetAngle.x > 90 )
+					clampTargetAngle.x -= 360;
+
+				float minYaw = clampTargetAngle.y - yawRange/2;
+				float maxYaw = clampTargetAngle.y + yawRange/2;
+				// this is viewangle pitch, so up is negative
+				float minPitch = -clampTargetAngle.x + pitchDownRange;
+				float maxPitch = -clampTargetAngle.x - pitchUpRange;
+
+				while ( minYaw < 0 ) { minYaw += 360; maxYaw += 360; }
+
+				//clamp the view
+				MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+					WRITE_SHORT(minYaw);
+					WRITE_SHORT(maxYaw);
+					WRITE_BYTE(minPitch + 128);
+					WRITE_BYTE(maxPitch + 128);
+					WRITE_LONG(*(long*)&turnSpeed);
+				MESSAGE_END();
+			}
+			else
+			{
+				//unclamp the view
+				MESSAGE_BEGIN(MSG_ONE, gmsgClampView, NULL, pActivator->pev);
+					WRITE_SHORT(0);
+					WRITE_SHORT(360);
+					WRITE_BYTE(0);
+					WRITE_BYTE(255);
+					WRITE_LONG(*(long*)&turnSpeed);
+				MESSAGE_END();
+			}
+
+			pev->spawnflags |= SF_ACTIVE;
+
 			if (m_flDelay)
 			{
 				m_hActivator = pActivator;
 				SetNextThink(m_flDelay);
 			}
 		}
+
 	}
 }
 
@@ -5309,6 +5564,31 @@ void CPlayerFreeze::Think ( void )
 }
 
 LINK_ENTITY_TO_CLASS( player_freeze, CPlayerFreeze );
+
+//==========================================================
+// player marker for right mirroring a player in env_mirror
+//==========================================================
+
+class CPlayerMarker : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void Precache ( void );
+};
+
+LINK_ENTITY_TO_CLASS( player_marker, CPlayerMarker );
+
+void CPlayerMarker :: Spawn( void )
+{
+	Precache();
+	SET_MODEL( ENT(pev), "models/null.mdl" );
+	ALERT(at_aiconsole, "DEBUG: Player_marker coordinates is %f %f %f \n", pev->origin.x, pev->origin.y, pev->origin.z);
+}
+
+void CPlayerMarker :: Precache( void )
+{
+	PRECACHE_MODEL( "models/null.mdl" );
+}
 
 //=========================================================
 // Multiplayer intermission spots.
@@ -5363,6 +5643,17 @@ class CHudSprite:public CBaseEntity
 
 void CHudSprite::Spawn( void )
 {
+	//LRC 1.8
+	// We can't keep a hud.txt spritename in pev->model, because on loading a saved game, it
+	// tries to precache it as though it was a model file. (And crashes.)
+	// So now we keep them in pev->message... but for backwards compatibility,
+	// transfer the "model" field into "message", and clear model.
+	if (FStringNull(pev->message))
+	{
+		pev->message = pev->model;
+		pev->model = 0;
+	}
+
 	if (FStringNull(pev->targetname))
 	{
 		pev->spawnflags |= SF_HUDSPR_ACTIVE;
@@ -5401,7 +5692,7 @@ void CHudSprite::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 //		byte   : blue
 	MESSAGE_BEGIN( MSG_ONE, gmsgStatusIcon, NULL, pActivator->pev );
 		WRITE_BYTE(pev->spawnflags & SF_HUDSPR_ACTIVE);
-		WRITE_STRING(STRING(pev->model));
+		WRITE_STRING(STRING(pev->message));
 		WRITE_BYTE(pev->rendercolor.x);
 		WRITE_BYTE(pev->rendercolor.y);
 		WRITE_BYTE(pev->rendercolor.z);

@@ -8,10 +8,6 @@
 // studio_model.cpp
 // routines for setting up to draw 3DStudio models
 
-#include <windows.h>
-#include <gl\gl.h>		// Header File For The OpenGL32 Library
-#include <gl\glu.h>		// Header File For The GLu32 Library
-
 #include "hud.h"
 #include "cl_util.h"
 #include "const.h"
@@ -38,32 +34,6 @@ engine_studio_api_t IEngineStudio;
 
 /////////////////////
 // Implementation of CStudioModelRenderer.h
-
-// The adjusted pointer to the shadow function
-void (*GL_StudioDrawShadow)(void);
-
-// This needs to be a function so that when GL_StudioDrawShadow() returns, the
-// stack isn't trashed.  It needs to be __declspec(naked) so the compiler doesn't
-// emit any prolog/epilog code (we do that ourselves in the asm block).
-
-__declspec(naked) void DrawShadows(void)
-{
-
-	// GL_StudioDrawShadows calls this, but the adjusted pointer skips it.
-	// We need to call it ourselves (although I can't see any difference if we don't...)
-	// We're only called from StudioRenderFinal_Hardware, so the gl call is Ok.
-
-	glDepthMask( 1 );
-	_asm 
-	{
-		// Must save ecx! GL_StudioDrawShadow will attempt to pop it when it returns
-		push ecx;
-		// Must jmp, not call so when GL_StudioDrawShadow returns it pulls the return
-		// address of this function (i.e. it will return to wherever we were called from)
-		jmp [GL_StudioDrawShadow];
-	}
-
-}
 
 /*
 ====================
@@ -423,7 +393,11 @@ void CStudioModelRenderer::StudioPlayerBlend( mstudioseqdesc_t *pseqdesc, int *p
 {
 	// calc up/down pointing
 
-	*pBlend = (*pPitch * -6);
+//G-Cont. no need anymore
+//	if(gHUD.m_iCameraMode)	
+//		*pBlend = (*pPitch * 3);//G-Cont. check for right calculate blending in diff mode
+//	else 
+		*pBlend = (*pPitch * -6);
 
 	if (*pBlend < pseqdesc->blendstart[0])
 	{
@@ -457,7 +431,7 @@ void CStudioModelRenderer::StudioSetUpTransform (int trivial_accept)
 	vec3_t			angles;
 	vec3_t			modelpos;
 
-	// tweek model origin	
+// tweek model origin	
 	//for (i = 0; i < 3; i++)
 	//	modelpos[i] = m_pCurrentEntity->origin[i];
 
@@ -466,28 +440,50 @@ void CStudioModelRenderer::StudioSetUpTransform (int trivial_accept)
 // TODO: should really be stored with the entity instead of being reconstructed
 // TODO: should use a look-up table
 // TODO: could cache lazily, stored in the entity
+	angles[ROLL] = m_pCurrentEntity->curstate.angles[ROLL];
 	angles[PITCH] = m_pCurrentEntity->curstate.angles[PITCH];
 	angles[YAW] = m_pCurrentEntity->curstate.angles[YAW];
-	angles[ROLL] = m_pCurrentEntity->curstate.angles[ROLL];
-	
+
 	//Con_DPrintf("Angles %4.2f prev %4.2f for %i\n", angles[PITCH], m_pCurrentEntity->index);
 	//Con_DPrintf("movetype %d %d\n", m_pCurrentEntity->movetype, m_pCurrentEntity->aiment );
 	if (m_pCurrentEntity->curstate.movetype == MOVETYPE_STEP) 
-	{		float			f = 0;
+	{
+		float			f = 0;
 		float			d;
-		mstudioseqdesc_t		*pseqdesc;//acess to studio flags
-		
-		pseqdesc = (mstudioseqdesc_t *)((byte *)m_pStudioHeader + m_pStudioHeader->seqindex) + m_pCurrentEntity->curstate.sequence;
-		if ( ( m_clTime < m_pCurrentEntity->curstate.animtime + 1.0f ) && ( m_pCurrentEntity->curstate.animtime != m_pCurrentEntity->latched.prevanimtime ) )
-			 f = (m_clTime - m_pCurrentEntity->curstate.animtime) / (m_pCurrentEntity->curstate.animtime - m_pCurrentEntity->latched.prevanimtime);
 
-		if (m_fDoInterp) f = f - 1.0;
-		else f = 0;
-		
-		//very strange... in xash 0.2 this worked very nice
-		if (pseqdesc->motiontype & STUDIO_LX || m_pCurrentEntity->curstate.eflags & FL_FLY)//enable interpolation only for walk\run
-			for (i = 0; i < 3; i++) modelpos[i] += (m_pCurrentEntity->origin[i] - m_pCurrentEntity->latched.prevorigin[i]) * f;
-                    for (i = 0; i < 3; i++)
+		// don't do it if the goalstarttime hasn't updated in a while.
+
+		// NOTE:  Because we need to interpolate multiplayer characters, the interpolation time limit
+		//  was increased to 1.0 s., which is 2x the max lag we are accounting for.
+
+		if ( ( m_clTime < m_pCurrentEntity->curstate.animtime + 1.0f ) &&
+			 ( m_pCurrentEntity->curstate.animtime != m_pCurrentEntity->latched.prevanimtime ) )
+		{
+			f = (m_clTime - m_pCurrentEntity->curstate.animtime) / (m_pCurrentEntity->curstate.animtime - m_pCurrentEntity->latched.prevanimtime);
+			//Con_DPrintf("%4.2f %.2f %.2f\n", f, m_pCurrentEntity->curstate.animtime, m_clTime);
+		}
+
+		if (m_fDoInterp)
+		{
+			// ugly hack to interpolate angle, position. current is reached 0.1 seconds after being set
+			f = f - 1.0;
+		}
+		else
+		{
+			f = 0;
+		}
+
+		for (i = 0; i < 3; i++)
+		{
+			modelpos[i] += (m_pCurrentEntity->origin[i] - m_pCurrentEntity->latched.prevorigin[i]) * f;
+		}
+
+		// NOTE:  Because multiplayer lag can be relatively large, we don't want to cap
+		//  f at 1.5 anymore.
+		//if (f > -1.0 && f < 1.5) {}
+
+//			Con_DPrintf("%.0f %.0f\n",m_pCurrentEntity->msg_angles[0][YAW], m_pCurrentEntity->msg_angles[1][YAW] );
+		for (i = 0; i < 3; i++)
 		{
 			float ang1, ang2;
 
@@ -506,6 +502,7 @@ void CStudioModelRenderer::StudioSetUpTransform (int trivial_accept)
 
 			angles[i] += d * f;
 		}
+		//Con_DPrintf("%.3f \n", f );
 	}
 	else if ( m_pCurrentEntity->curstate.movetype != MOVETYPE_NONE ) 
 	{
@@ -715,32 +712,7 @@ void CStudioModelRenderer::StudioFxTransform( cl_entity_t *ent, float transform[
 			transform[2][1] *= scale;
 		}
 	break;
-          case kRenderFxMirror:
-		{
-			switch (gHUD.Mirrors[mirror_id].type)
-			{
-			case 0:
-				transform[0][0] *= -1;
-				transform[0][1] *= -1;
-				transform[0][2] *= -1;
-				transform[0][3] = gHUD.Mirrors[mirror_id].origin[0]*2 - ent->origin[0];
-			break;
-			case 1:
-				transform[1][1] *= -1;
-				transform[1][0] *= -1;
-				transform[1][2] *= -1;
-				transform[1][3] = gHUD.Mirrors[mirror_id].origin[1]*2 - ent->origin[1];
-			break;
-			case 2:
-			default:
-				transform[2][2] *= -1;
-				transform[2][1] *= -1;
-				transform[2][0] *= -1;
-				transform[2][3] = gHUD.Mirrors[mirror_id].origin[2]*2 - ent->origin[2];
-			break;
-			}
-		break;
-		}
+
 	}
 }
 
@@ -1111,6 +1083,12 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 	vec3_t dir;
 
 	m_pCurrentEntity = IEngineStudio.GetCurrentEntity();
+
+	if (gHUD.m_iSkyMode==SKY_ON_DRAWING && m_pCurrentEntity->curstate.renderfx != kRenderFxEntInPVS)
+	{
+		return 0;
+	}
+
 	IEngineStudio.GetTimes( &m_nFrameCount, &m_clTime, &m_clOldTime );
 	IEngineStudio.GetViewInfo( m_vRenderOrigin, m_vUp, m_vRight, m_vNormal );
 	IEngineStudio.GetAliasScale( &m_fSoftwareXScale, &m_fSoftwareYScale );
@@ -1121,27 +1099,30 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 		m_nCachedFrameCount = m_nFrameCount;
 	}
 
-	if (!b_PlayerMarkerParsed && !gHUD.m_iCameraMode)
+	if (!strcmp(m_pCurrentEntity->model->name,"models/null.mdl"))
 	{
-		b_PlayerMarkerParsed = true;
+		if (!b_PlayerMarkerParsed)
+		{
+			cl_entity_t *player = gEngfuncs.GetLocalPlayer();
+			entity_state_t *shinyplr = IEngineStudio.GetPlayerState( 0 );
 
-		cl_entity_t *plr = gEngfuncs.GetLocalPlayer();
-		entity_state_t *pstate = IEngineStudio.GetPlayerState( plr->index - 1 ); 
+			int save_interp;
+			save_interp = m_fDoInterp;
+			m_fDoInterp = 0;
 
-		int save_interp;
-		save_interp = m_fDoInterp;
-		m_fDoInterp = 0;
-			
-		// draw as though it were a player
-		int newflags = (STUDIO_RENDER | 2048);
-		m_pCurrentEntity = plr;
+			// draw as though it were a player
+			flags |= 2048;
 
-		StudioDrawPlayer( newflags, pstate );
+			m_pCurrentEntity = player;
 
-		m_fDoInterp = save_interp;
+			StudioDrawPlayer( flags, shinyplr );
 
-		m_pCurrentEntity = IEngineStudio.GetCurrentEntity();
+			b_PlayerMarkerParsed = true;
+			m_fDoInterp = save_interp;
+		}
+		return 1;
 	}
+
 	if (m_pCurrentEntity->curstate.renderfx == kRenderFxDeadPlayer)
 	{
 		entity_state_t deadplayer;
@@ -1153,7 +1134,7 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 			return 0;
 
 		// get copy of player
-		deadplayer = *(IEngineStudio.GetPlayerState( m_pCurrentEntity->curstate.renderamt - 1 ));
+		deadplayer = *(IEngineStudio.GetPlayerState( m_pCurrentEntity->curstate.renderamt - 1 )); //cl.frames[cl.parsecount & CL_UPDATE_MASK].playerstate[m_pCurrentEntity->curstate.renderamt-1];
 
 		// clear weapon, movement state
 		deadplayer.number = m_pCurrentEntity->curstate.renderamt;
@@ -1193,11 +1174,11 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 			if ((gHUD.numMirrors<0) || (gHUD.Mirrors[mirror_id].radius < dist)) return 0;
                     }
 		
-		(*m_pModelsDrawn)++;
-		(*m_pStudioModelCount)++; // render data cache cookie
+			(*m_pModelsDrawn)++;
+			(*m_pStudioModelCount)++; // render data cache cookie
 
-		if (m_pStudioHeader->numbodyparts == 0)
-		return 1;
+			if (m_pStudioHeader->numbodyparts == 0)
+				return 1;
 	} 
           
           if (m_pCurrentEntity->curstate.movetype == MOVETYPE_FOLLOW)
@@ -1544,21 +1525,18 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 	IEngineStudio.GetViewInfo( m_vRenderOrigin, m_vUp, m_vRight, m_vNormal );
 	IEngineStudio.GetAliasScale( &m_fSoftwareXScale, &m_fSoftwareYScale );
 
+	// Con_DPrintf ("DrawPlayer %d\n", m_pCurrentEntity->blending[0] );
+
+	// Con_DPrintf("DrawPlayer %d %d (%d)\n", m_nFrameCount, pplayer->player_index, m_pCurrentEntity->curstate.sequence );
+
+	// Con_DPrintf("Player %.2f %.2f %.2f\n", pplayer->velocity[0], pplayer->velocity[1], pplayer->velocity[2] );
+
 	m_nPlayerIndex = pplayer->number - 1;
-	
+
 	if (m_nPlayerIndex < 0 || m_nPlayerIndex >= gEngfuncs.GetMaxClients())
 		return 0;
 
-	if (!(flags & 2048))
-	{
-		m_pRenderModel = IEngineStudio.SetupPlayerModel( m_nPlayerIndex );
-	}
-	else
-	{
-		if (m_pCvarDeveloper->value)
-			m_pRenderModel = IEngineStudio.SetupPlayerModel( m_nPlayerIndex );
-		else	m_pRenderModel = m_pCurrentEntity->model;
-	}
+	m_pRenderModel = IEngineStudio.SetupPlayerModel( m_nPlayerIndex );
 
 	if (m_pRenderModel == NULL) return 0;
 
@@ -1566,11 +1544,34 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 	IEngineStudio.StudioSetHeader( m_pStudioHeader );
 	IEngineStudio.SetRenderModel( m_pRenderModel );
 
-	if (gHUD.numMirrors > 0)
+	if (gHUD.numMirrors>0)
 	{
-		int savedrenderfx = m_pCurrentEntity->curstate.renderfx;
-		m_pCurrentEntity->curstate.renderfx = kRenderFxMirror;
-		for (int ic=0;ic < gHUD.numMirrors; ic++)
+		StudioSetUpTransform( 0 );//G-cont. transform must be first!
+		switch (gHUD.Mirrors[mirror_id].type)
+		{
+		case 0:
+	        		(*m_protationmatrix)[0][0] *= -1;
+      	        		(*m_protationmatrix)[0][1] *= -1;
+			(*m_protationmatrix)[0][2] *= -1;
+			(*m_protationmatrix)[0][3] = gHUD.Mirrors[mirror_id].origin[0]*2 - m_pCurrentEntity->origin[0];
+                       	break;
+
+		case 1:
+			(*m_protationmatrix)[1][1] *= -1;
+			(*m_protationmatrix)[1][0] *= -1;
+			(*m_protationmatrix)[1][2] *= -1;
+			(*m_protationmatrix)[1][3] = gHUD.Mirrors[mirror_id].origin[1]*2 - m_pCurrentEntity->origin[1];
+                       	break;
+
+		case 2:
+	        		(*m_protationmatrix)[2][2] *= -1;
+      	        		(*m_protationmatrix)[2][1] *= -1;
+			(*m_protationmatrix)[2][0] *= -1;
+			(*m_protationmatrix)[2][3] = gHUD.Mirrors[mirror_id].origin[2]*2.3 - m_pCurrentEntity->origin[2];
+                        	break;
+                	}
+
+		for (int ic=0;ic < gHUD.numMirrors;ic++)
 		{
 			//Parsing mirror
 
@@ -1608,7 +1609,7 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 				m_pPlayerInfo->gaitsequence = pplayer->gaitsequence;
 				m_pPlayerInfo = NULL;
 
-				StudioSetUpTransform( 0 );
+				//StudioSetUpTransform( 0 );
 	          		VectorCopy( orig_angles, m_pCurrentEntity->angles );
 			}
          			else //player in jump (or duck)
@@ -1624,8 +1625,8 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		
 				m_pPlayerInfo = IEngineStudio.PlayerInfo( m_nPlayerIndex );
 				m_pPlayerInfo->gaitsequence = 0;
-			
-				StudioSetUpTransform( 0 );
+
+				//StudioSetUpTransform( 0 );
 			}
           		if (flags & STUDIO_RENDER)
 			{
@@ -1718,8 +1719,8 @@ int CStudioModelRenderer::StudioDrawPlayer( int flags, entity_state_t *pplayer )
 		} //end for
 
 		gEngfuncs.pTriAPI->CullFace( TRI_FRONT );
-		m_pCurrentEntity->curstate.renderfx = savedrenderfx;
 	}
+
 
 	if (!(flags & 2048))
 	{
@@ -1870,7 +1871,8 @@ void CStudioModelRenderer::StudioCalcAttachments( void )
 
 	if ( m_pStudioHeader->numattachments > 4 )
 	{
-		CONPRINT( "Too many attachments on %s\n", m_pCurrentEntity->model->name );
+		gEngfuncs.Con_DPrintf( "Too many attachments on %s\n", m_pCurrentEntity->model->name );
+		exit( -1 );
 	}
 
 	// calculate attachment points
@@ -2000,13 +2002,7 @@ void CStudioModelRenderer::StudioRenderFinal_Hardware( void )
 
 			IEngineStudio.GL_SetRenderMode( rendermode );
 			IEngineStudio.StudioDrawPoints();
-			// Set the pointer to skip the code that checks the locked r_shadows cvar
-			GL_StudioDrawShadow = (void(*)(void))(((unsigned int)IEngineStudio.GL_StudioDrawShadow)+32);
-			// Don't draw shadows from v_models
-			if (CVAR_GET_FLOAT("r_shadows") == 1 && gEngfuncs.GetViewModel() != m_pCurrentEntity)
-			{
-				DrawShadows();
-			}
+			IEngineStudio.GL_StudioDrawShadow();
 		}
 	}
 
@@ -2017,10 +2013,6 @@ void CStudioModelRenderer::StudioRenderFinal_Hardware( void )
 		gEngfuncs.pTriAPI->RenderMode( kRenderNormal );
 	}
 
-	if (m_pCvarDrawEntities->value == 5)
-	{
-		IEngineStudio.StudioDrawAbsBBox( );
-	}
 	IEngineStudio.RestoreRenderer();
 }
 

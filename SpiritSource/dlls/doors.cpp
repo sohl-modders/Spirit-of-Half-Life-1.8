@@ -12,6 +12,10 @@
 *   without written permission from Valve LLC.
 *
 ****/
+
+//Last Modifed 9 August 2004 By Andrew Hamilton (AJH)
+//  :- Added support for acceleration of doors 
+
 /*
 
 ===== doors.cpp ========================================================
@@ -84,9 +88,9 @@ public:
 
 	BOOL	m_iDirectUse;
 
-	float   	m_fAcceleration;  
-	float	m_fDeceleration;
-	BOOL	m_iSpeedMode;//AJH for changing door speeds
+	float   m_fAcceleration;	//AJH
+	float	m_fDeceleration;	//AJH
+	BOOL	m_iSpeedMode;		//AJH for changing door speeds
 };
 
 
@@ -105,6 +109,10 @@ TYPEDESCRIPTION	CBaseDoor::m_SaveData[] =
 	DEFINE_FIELD( CBaseDoor, m_iImmediateMode, FIELD_BOOLEAN ),
 
 	DEFINE_FIELD( CBaseDoor, m_iDirectUse, FIELD_BOOLEAN ),
+
+	DEFINE_FIELD( CBaseDoor, m_fAcceleration, FIELD_FLOAT ),	//AJH
+	DEFINE_FIELD( CBaseDoor, m_fDeceleration, FIELD_FLOAT ),	//AJH
+	DEFINE_FIELD( CBaseDoor, m_iSpeedMode, FIELD_BOOLEAN ),		//AJH for changing door speeds
 };
 
 IMPLEMENT_SAVERESTORE( CBaseDoor, CBaseToggle );
@@ -270,6 +278,21 @@ void CBaseDoor::KeyValue( KeyValueData *pkvd )
 	else if (FStrEq(pkvd->szKeyName, "WaveHeight"))
 	{
 		pev->scale = atof(pkvd->szValue) * (1.0/8.0);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "acceleration")) //AJH (for both 'usemode' accel and normal accel)
+	{
+		m_fAcceleration = atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "deceleration")) //AJH
+	{
+		m_fDeceleration = atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "speedmode")) //AJH for changing door speeds (for 'usemode' acceleration)
+	{
+		m_iSpeedMode = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -647,39 +670,45 @@ void CBaseDoor::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 
 	if (!UTIL_IsMasterTriggered(m_sMaster, pActivator))
 		return;
-
-	if (m_iOnOffMode)
-	{
-		if (useType == USE_ON)
-		{
-			if (m_toggle_state == TS_AT_BOTTOM)
-			{
-		 		PlayLockSounds(pev, &m_ls, FALSE, FALSE);
-		 		DoorGoUp();
-			}
-			return;
-		}
-		else if (useType == USE_OFF)
-		{
-			if (m_toggle_state == TS_AT_TOP)
-			{
-		         		DoorGoDown();
-			}
-	         		return;
-		}
+	if (m_iSpeedMode==1){			//AJH for changing door speeds
+		pev->speed+=m_fAcceleration;
+		DoorActivate();				
+		ALERT(at_debug, "speed increased by %f and is now %f\n", m_fAcceleration,pev->speed);
 	}
+	else{
+		if (m_iOnOffMode)
+		{
+			if (useType == USE_ON)
+			{
+				if (m_toggle_state == TS_AT_BOTTOM)
+				{
+		 			PlayLockSounds(pev, &m_ls, FALSE, FALSE);
+		 			DoorGoUp();
+				}
+				return;
+			}
+			else if (useType == USE_OFF)
+			{
+				if (m_toggle_state == TS_AT_TOP)
+				{
+		         	DoorGoDown();
+				}
+	         	return;
+			}
+		}
 
 
-	// if not ready to be used, ignore "use" command.
-	if (m_toggle_state == TS_AT_TOP)
-	{
-		if (!FBitSet(pev->spawnflags, SF_DOOR_NO_AUTO_RETURN))
+		// if not ready to be used, ignore "use" command.
+		if (m_toggle_state == TS_AT_TOP)
+		{
+			if (!FBitSet(pev->spawnflags, SF_DOOR_NO_AUTO_RETURN))
+				return;
+		}
+		else if (m_toggle_state != TS_AT_BOTTOM)
 			return;
-	}
-	else if (m_toggle_state != TS_AT_BOTTOM)
-		return;
-
+	
 		DoorActivate();
+	}
 }
 
 //
@@ -770,7 +799,11 @@ void CBaseDoor::DoorGoUp( void )
 		AngularMove(m_vecAngle2*sign, pev->speed);
 	}
 	else
-		LinearMove(m_vecPosition2, pev->speed);
+
+		if(m_iSpeedMode==1){		//AJH modifed to allow two types of accelerating doors	
+			LinearMove(m_vecPosition2, pev->speed);
+		}else{
+			LinearMove(m_vecPosition2, pev->speed, m_fAcceleration, m_fDeceleration); }
 }
 
 
@@ -868,7 +901,11 @@ void CBaseDoor::DoorGoDown( void )
 		{
 			SUB_UseTargets( m_hActivator, USE_OFF, 0 );
 		}
-		LinearMove( m_vecPosition1, pev->speed);
+
+		if(m_iSpeedMode==1){		//AJH modifed to allow two types of accelerating doors	
+			LinearMove(m_vecPosition1, pev->speed);
+		}else{
+			LinearMove(m_vecPosition1, pev->speed, m_fAcceleration, m_fDeceleration); }
 	}
 }
 
@@ -938,7 +975,10 @@ void CBaseDoor::Blocked( CBaseEntity *pOther )
 
 	// Hurt the blocker a little.
 	if ( pev->dmg )
-		pOther->TakeDamage( pev, pev, pev->dmg, DMG_CRUSH );
+		if (m_hActivator)
+			pOther->TakeDamage( pev, m_hActivator->pev, pev->dmg, DMG_CRUSH );	//AJH Attribute damage to he who switched me.
+		else
+			pOther->TakeDamage( pev, pev, pev->dmg, DMG_CRUSH );
 
 	// if a door has a negative wait, it would never come back if blocked,
 	// so let it just squash the object to death real fast
@@ -1144,7 +1184,7 @@ public:
 	float m_fLastPos;
 
 	STATE	GetState( void ) { return m_iState; }
-	float CalcRatio( CBaseEntity *pLocus ) { return m_fLastPos; }
+	bool CalcNumber( CBaseEntity *pLocus, float* OUTresult ) { *OUTresult = m_fLastPos; return true; }
 };
 
 LINK_ENTITY_TO_CLASS( momentary_door, CMomentaryDoor );

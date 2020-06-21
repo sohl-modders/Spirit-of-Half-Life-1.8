@@ -713,7 +713,6 @@ enum
 	kRenderFxClampMinScale,		// Keep this sprite from getting very small (SPRITES only!)
 	kRenderFxReflection,		//LRC - draw a reflection under my feet
 	kRenderFxEntInPVS,			//G-Cont - this style for entity, which draw always
-	kRenderFxMirror,			//G-Cont - mirror transform
 };
 
 

@@ -8,17 +8,6 @@
 #if !defined ( EV_HLDMH )
 #define EV_HLDMH
 
-enum shotgun_e {
-	SHOTGUN_IDLE = 0,
-	SHOTGUN_DRAW,
-	SHOTGUN_HOLSTER,
-	SHOTGUN_FIRE,
-	SHOTGUN_FIRE2,
-	SHOTGUN_START_RELOAD,
-	SHOTGUN_RELOAD,
-	SHOTGUN_PUMP
-};
-
 // bullet types
 typedef	enum
 {
@@ -38,27 +27,53 @@ enum glock_e {
 	GLOCK_IDLE1 = 0,
 	GLOCK_IDLE2,
 	GLOCK_IDLE3,
-	GLOCK_DRAW,
-	GLOCK_HOLSTER,
 	GLOCK_SHOOT,
 	GLOCK_SHOOT_EMPTY,
 	GLOCK_RELOAD,
 	GLOCK_RELOAD_NOT_EMPTY,
-	GLOCK_HOLSTER2,
-	GLOCK_ADD_SILENCER,
-	GLOCK_DEL_SILENCER
+	GLOCK_DRAW,
+	GLOCK_HOLSTER,
+	GLOCK_ADD_SILENCER
+};
+
+enum generic_e 
+{
+	GENERIC_IDLE1 = 0,
+	GENERIC_IDLE2,
+	GENERIC_IDLE3,
+	GENERIC_SHOOT,
+	GENERIC_SHOOT2,
+	GENERIC_RELOAD,
+	GENERIC_RELOAD2,
+	GENERIC_DRAW,
+	GENERIC_HOLSTER,
+	GENERIC_SPECIAL
+};
+
+enum shotgun_e {
+	SHOTGUN_IDLE = 0,
+	SHOTGUN_FIRE,
+	SHOTGUN_FIRE2,
+	SHOTGUN_RELOAD,
+	SHOTGUN_PUMP,
+	SHOTGUN_START_RELOAD,
+	SHOTGUN_DRAW,
+	SHOTGUN_HOLSTER,
+	SHOTGUN_IDLE4,
+	SHOTGUN_IDLE_DEEP
 };
 
 enum mp5_e
 {
-	MP5_IDLE = 0,
+	MP5_LONGIDLE = 0,
+	MP5_IDLE1,
+	MP5_LAUNCH,
+	MP5_RELOAD,
 	MP5_DEPLOY,
-	MP5_HOLSTER,
 	MP5_FIRE1,
 	MP5_FIRE2,
 	MP5_FIRE3,
-	MP5_LAUNCH,
-	MP5_RELOAD
+	MP5_HOLSTER
 };
 
 enum python_e {
@@ -87,11 +102,9 @@ enum gauss_e {
 	GAUSS_DRAW
 };
 
-vec3_t EV_HLDM_GetMirroredPosition(int mirror_index, vec3_t pos);
 void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName );
 void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType );
 int EV_HLDM_CheckTracer( int idx, float *vecSrc, float *end, float *forward, float *right, int iBulletType, int iTracerFreq, int *tracerCount );
 void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int cShots, float *vecSrc, float *vecDirShooting, float flDistance, int iBulletType, int iTracerFreq, int *tracerCount, float flSpreadX, float flSpreadY );
-void EV_UpdateBeams ( void );
 
 #endif // EV_HLDMH

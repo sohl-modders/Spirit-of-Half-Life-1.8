@@ -1076,7 +1076,7 @@ void CHudSpectator::DrawOverviewLayer()
 	if ( hasMapImage)
 	{
 		i = m_MapSprite->numframes / (4*3);
-		i = sqrt(i);
+		i = sqrt(double(i)); //LRC 1.8 - Visual Studio.NET complained here without the cast
 		xTiles = i*4;
 		yTiles = i*3;
 	}

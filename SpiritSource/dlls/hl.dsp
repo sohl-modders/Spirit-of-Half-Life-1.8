@@ -18,6 +18,8 @@ CFG=hl - Win32 Release
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "hl - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "hl - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "hl - Win32 Profile" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
@@ -27,6 +29,9 @@ CFG=hl - Win32 Release
 CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
+
+!IF  "$(CFG)" == "hl - Win32 Release"
+
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
 # PROP BASE Output_Dir ".\Release"
@@ -34,36 +39,127 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir ".\Release"
-# PROP Intermediate_Dir ".\Release"
+# PROP Output_Dir ".\Releasehl"
+# PROP Intermediate_Dir ".\Releasehl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MT /W3 /O1 /I "..\dlls" /I "..\engine" /I "..\common" /I "..\pm_shared" /I "..\game_shared" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /FD /c
-# SUBTRACT CPP /Fr
+# ADD CPP /nologo /G5 /MT /W3 /O1 /I "..\dlls" /I "..\engine" /I "..\common" /I "..\pm_shared" /I "..\game_shared" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "CLIENT_WEAPONS" /Fr /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o".\Release/server.bsc"
+# ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /machine:I386 /def:".\hl.def" /out:".\Release/spirit.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /machine:I386 /def:".\hl.def" /out:".\Releasehl/spirit.dll"
 # SUBTRACT LINK32 /profile /map /debug
-# Begin Custom Build - Custom Build in progress
-TargetDir=.\Release
-InputPath=.\Release\spirit.dll
+# Begin Custom Build
+TargetDir=.\Releasehl
+InputPath=.\Releasehl\spirit.dll
 SOURCE="$(InputPath)"
 
-"D:\games\hl1\spirit\cl_dlls\server.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetDir)\spirit.dll "D:\games\hl1\spirit\cl_dlls\server.dll"
+BuildCmds= \
+	copy $(TargetDir)\spirit.dll "c:\games\half-life\spirit\dlls\spirit.dll" \
+	copy $(TargetDir)\spirit.dll "c:\games\half-life\spirit\dlls\spirit1.5a4.dll" \
+	
+
+"c:\games\half-life\spirit\dlls\spirit.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"c:\games\half-life\spirit\dlls\spirit1.5a4.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir ".\hl___Win"
+# PROP BASE Intermediate_Dir ".\hl___Win"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir ".\debughl"
+# PROP Intermediate_Dir ".\debughl"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /ZI /Od /I "..\dlls" /I "..\engine" /I "..\common" /I "..\game_shared" /I "..\pm_shared" /I "..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "CLIENT_WEAPONS" /FR /YX /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /i "..\engine" /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
+# ADD LINK32 user32.lib advapi32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /def:".\hl.def" /out:".\debughl/spirit.dll" /implib:".\Debug\hl.lib"
+# SUBTRACT LINK32 /profile
+# Begin Custom Build
+TargetDir=.\debughl
+InputPath=.\debughl\spirit.dll
+SOURCE="$(InputPath)"
+
+"D:\sierra\half-life\spirit\cl_dlls\server.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(TargetDir)\spirit.dll "D:\sierra\half-life\spirit\cl_dlls\server.dll"
 
 # End Custom Build
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Profile"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir ".\hl___Win"
+# PROP BASE Intermediate_Dir ".\hl___Win"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir ".\Profilehl"
+# PROP Intermediate_Dir ".\Profilehl"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /c
+# SUBTRACT BASE CPP /Fr
+# ADD CPP /nologo /G5 /MT /W3 /Zi /O2 /I "..\dlls" /I "..\engine" /I "..\common" /I "..\pm_shared" /I "..\game_shared" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "CLIENT_WEAPONS" /Fr /YX /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /d "NDEBUG"
+# ADD RSC /l 0x409 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /debug /machine:I386 /def:".\hl.def"
+# SUBTRACT BASE LINK32 /profile
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /profile /debug /machine:I386 /def:".\hl.def" /out:".\Profilehl/spirit.dll"
+# Begin Custom Build
+TargetDir=.\Profilehl
+InputPath=.\Profilehl\spirit.dll
+SOURCE="$(InputPath)"
+
+BuildCmds= \
+	copy $(TargetDir)\spirit.dll "C:\games\half-life\spirit\dlls\spirit15a4.dll" \
+	copy $(TargetDir)\spirit.dll "C:\games\half-life\spirit\dlls\spirit.dll" \
+	
+
+"c:\games\half-life\spirit\dlls\spirit15a4.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"c:\games\half-life\spirit\dlls\spirit.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ENDIF 
+
 # Begin Target
 
 # Name "hl - Win32 Release"
+# Name "hl - Win32 Debug"
+# Name "hl - Win32 Profile"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90"
@@ -77,7 +173,7 @@ SOURCE=.\agrunt.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\schedule.cpp
+SOURCE=.\AI_BaseNPC_Schedule.cpp
 # End Source File
 # Begin Source File
 
@@ -150,6 +246,10 @@ SOURCE=.\crossbow.cpp
 # Begin Source File
 
 SOURCE=.\crowbar.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\debugger.cpp
 # End Source File
 # Begin Source File
 

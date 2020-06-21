@@ -1,15 +1,8 @@
 /***
 *
-*	Copyright (c) 1996-2004, Shambler Team. All rights reserved.
+*	Copyright (c) 2005, BUzer.
 *	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
-*
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Shambler Team.  All other use, distribution, or modification is prohibited
-*   without written permission from Shambler Team.
+*	Used with permission for Spirit of Half-Life 1.5
 *
 ****/
 /*
@@ -244,7 +237,7 @@ void ProcessRain( void )
 		}
 		else
 		{
-			//gEngfuncs.Con_Printf( "Rain error: Drip limit overflow!\n" );
+			gEngfuncs.Con_Printf( "Rain error: Drip limit overflow!\n" );
 			return;
 		}
 	}

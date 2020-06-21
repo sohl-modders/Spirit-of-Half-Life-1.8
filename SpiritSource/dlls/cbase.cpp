@@ -151,7 +151,6 @@ int DispatchSpawn( edict_t *pent )
 
 		if ( pEntity )
 		{
-			pEntity->pev->colormap = ENTINDEX(pent);
 			if ( g_pGameRules && !g_pGameRules->IsAllowedToSpawn( pEntity ) )
 				return -1;	// return that this entity should be deleted
 			if ( pEntity->pev->flags & FL_KILLME )
@@ -382,7 +381,7 @@ int DispatchRestore( edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity
 
 		// Again, could be deleted, get the pointer again.
 		pEntity = (CBaseEntity *)GET_PRIVATE(pent);
-		if (pEntity) pEntity->pev->colormap = ENTINDEX(pent);
+
 #if 0
 		if ( pEntity && pEntity->pev->globalname && globalEntity ) 
 		{
@@ -518,7 +517,7 @@ void CBaseEntity::Activate( void )
 	//LRC - and the aliaslist too
 	if (m_iLFlags & LF_ALIASLIST)
 	{
-		UTIL_AddToAliasList((CBaseAlias*)this);
+		UTIL_AddToAliasList((CBaseMutableAlias*)this);
 	}
 
 	if (m_activated) return;
@@ -692,9 +691,15 @@ int CBaseEntity :: TakeHealth( float flHealth, int bitsDamageType )
 {
 	if (!pev->takedamage)
 		return 0;
-
 // heal
-	if ( pev->health >= pev->max_health )
+
+	//AJH replaces all of below. This now returns the amount of health given. Should have exactly the same behaviour otherwise.
+	flHealth=(pev->max_health>=pev->health+flHealth)?flHealth:(pev->max_health-pev->health); 
+	pev->health+=flHealth;
+	return int(flHealth);
+
+
+/*	if ( pev->health >= pev->max_health )
 		return 0;
 
 	pev->health += flHealth;
@@ -703,6 +708,8 @@ int CBaseEntity :: TakeHealth( float flHealth, int bitsDamageType )
 		pev->health = pev->max_health;
 
 	return 1;
+*/
+	
 }
 
 // inflict damage on this entity.  bitsDamageType indicates type of damage inflicted, ie: DMG_CRUSH
