@@ -1,0 +1,1178 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Features page</title>
+</head>
+
+<body bgcolor="#444444" text="#FFA000" link="#F0F0A0"
+vlink="#F0F0A0">
+
+<h1 class="firstHeading">Features</h1>
+
+<h3 id="siteSub">From the now defunct Sohlwiki<b><i><br>
+This document explains some of the major features of Spirit of
+Half-Life.</i></b> </h3>
+
+<p>This list is by no means exhaustive. (For example, I haven't
+even mentioned aliases.) If you're looking for a list that is,
+see the Spirit Entity Guide. </p>
+
+<table border="0" id="toc">
+    <tr>
+        <td align="middle"><b>Table of contents</b> </td>
+    </tr>
+    <tr>
+        <td><a href="#MoveWith">1 MoveWith</a><br>
+        <a href="#Angles_and_Rotations">2 Angles and Rotations</a><br>
+        <a href="#Customizing_Monsters">3 Customizing Monsters</a><br>
+        <a href="#Triggering_Things">4 Triggering Things</a><br>
+        <p><a href="#env_state">4.1 env_state:</a><br>
+        <a href="#Triggering_momentary_doors:">4.2 Triggering
+        momentary doors:</a><br>
+        <a href="#Repeating_sequences_of_triggers:">4.3 Repeating
+        sequences of triggers:</a><br>
+        <a href="#Triggering_at_random:">4.4 Triggering at
+        random:</a><br>
+        <a href="#trigger_inout">4.5 trigger_inout</a><br>
+        <a href="#trigger_onsight">4.6 trigger_onsight</a><br>
+        <a href="#Special_Effects">5 Special Effects</a><br>
+        <a href="#Masters_and_States">6 Masters and States</a><br>
+        <a href="#The_Locus_System">7 The Locus System</a><br>
+        </p>
+        <p><a href="#The_calc__entities:">7.1 The calc_ entities:</a><br>
+        <a href="#Locus_Position_.5BLP.5D:">7.2 Locus Position
+        [LP]:</a><br>
+        <a href="#Locus_Ratio_.5BLR.5D:">7.3 Locus Ratio [LR]:</a><br>
+        <a
+        href="#Locus_Velocity_.5BLV.5D:_.28or_Locus_Vector.2C_if_you_prefer..29">7.4
+        Locus Velocity [LV]: (or Locus Vector, if you prefer.)</a><br>
+        <a href="#The_HEV_suit_and_the_Player">8 The HEV suit and
+        the Player</a><br>
+        <a href="#Scripted_Sequences">9 Scripted Sequences</a></p>
+        </td>
+    </tr>
+</table>
+
+<p><a name="MoveWith"></a> </p>
+
+<h2>MoveWith</h2>
+
+<p>The MoveWith system allows you to make entities move around as
+though they were attached together. For example, you can make a
+lift with buttons inside, a breakable glass door, and many many
+other things, all with a minimum of effort. </p>
+
+<p>Example: The effect is simple to set up. Suppose you have a
+func_train named &quot;mylift&quot;, and a func_button inside it.
+To make the button move when the lift moves, you would simply
+type &quot;mylift&quot; into the button's &quot;Moves With&quot;
+field. </p>
+
+<p>You aren't limited to just one entity, either. MoveWith can be
+chained together, to create objects as complex as you want. For
+example, you could make a train, and a door that MovesWith the
+train, and a button that MovesWith the door, and an env_spark
+effect that MovesWith the button! The env_spark will now move
+when the train moves, and also when the door moves, and also when
+the button moves, all as you'd expect. </p>
+
+<p>All entities can use the MoveWith system. If you find one that
+doesn't have a &quot;Moves With&quot; field, you can even add it
+yourself - Worldcraft users would just turn off SmartEdit and
+create a new keyvalue named &quot;movewith&quot;. The system does
+have limitations, however. </p>
+
+<ul>
+    <li>1. It can't follow the movement of certain entities -
+        specifically, things won't properly MoveWith a
+        func_pushable, a player, or a monster. (If you want an
+        entity to follow one of these, though, you may find a
+        motion_manager can do what you want.) </li>
+</ul>
+
+<ul>
+    <li>2. If you want something to properly MoveWith an entity
+        that rotates, you'll have to put its origin at that
+        entity's origin. (For a brush entity, this means you give
+        it an origin brush at that position. For a point entity,
+        this means that the X in the centre of the entity must be
+        at that position). Yes, in other words, when a rotating
+        object MovesWith another rotating object, they must
+        always rotate around the same point. So you can't create
+        an egg whisk. This limitation will hopefully be removed
+        in a future release. </li>
+</ul>
+
+<ul>
+    <li>3. Sometimes, the player can get in the way of doors and
+        other entities, stopping them from moving. If this
+        happens when something is MovingWith the door, or when
+        the door is MovingWith something else, then the two
+        entities may start to get out of sync. For this reason, I
+        recommend that when you use MoveWith on entities, you
+        make sure the player can't block them. (It's no problem
+        for them to push the player - just don't push him into
+        the wall. One good way to ensure this is to make the
+        entities non-solid.) </li>
+</ul>
+
+<p>(Many of the example levels use Movewith, particularly
+SpiritDemo and GatlingGunDemo.) </p>
+
+<p>Advanced MoveWith facilities: The info_movewith entity allows
+you to dynamically change what entities MoveWith. So for example,
+you could build a crane with a magnet. You turn on the magnet and
+it picks up a box; thereafter the box follows the movement of the
+crane. </p>
+
+<p>To use an info_movewith entity, essentially you link your
+entities together as normal, but insert the info_movewith into
+the chain. So in the crane example, you would have your box
+MoveWith an info_movewith entity, which would MoveWith the crane
+when it was active, and MoveWith nothing (a blank value) when it
+was inactive. Switching the info_movewith on and off would then
+effectively connect and detatch the box from the crane. </p>
+
+<p><a name="Angles_and_Rotations"></a> </p>
+
+<h2>Angles and Rotations</h2>
+
+<p>In Spirit, func_rotating (as well as most other rotating
+entities) has an &quot;Axis Multipliers&quot; field. This allows
+you to make an object that rotates along more than one axis at a
+time. </p>
+
+<p>For example, see the CogWheelDemo level. This shows a rotating
+cogwheel, mounted on an axle which is itself moving. </p>
+
+<p>Essentially, the Axis Multipliers field is a more versatile
+replacement for the &quot;X Axis&quot; and &quot;Y Axis&quot;
+flags that rotating objects have. So for example, consider the
+little wheel in the set of cogs on the floor. This has an Axis
+Multipliers field of &quot;-2 1 0&quot;. In other words, its
+pitch factor is -2, its yaw factor is 1, and its roll factor is
+0. Since its Rotation Speed setting is 30, this means its yaw
+rate (i.e. the movement of the axle) is 30 degrees a second, its
+pitch rate (i.e. the turning of the wheel) is 60 degrees a
+second, and it doesn't roll at all. The fact that its pitch is
+negative means that the wheel rotates anticlockwise instead of
+clockwise. This much is fairly self-explanatory, I hope. </p>
+
+<p>Unfortunately, rotations in Half-Life are a little more
+complicated than they look. Notice the two sets of cogwheels near
+the ceiling. The left-hand one is clearly wrong - it's swinging
+around all over the place - whereas the other one looks fine. If
+you open up the map file in your level editor, you'll see the
+difference between the two... one is built pointing down, the
+other is pointing east. The Axis Multipliers are set correctly on
+both, but the left one still doesn't work. Why? </p>
+
+<p>The answer is that Half-Life processes its rotations in a set
+order: Yaw, then Pitch, then Roll. When an object pitches, it
+rotates around the axis given by its current Yaw. When it rolls,
+it rotates around the axis given by its current Yaw and Pitch.
+Now, obviously, we would expect a wheel to rotate around its
+axle. This means that the axle's movement needs to be handled
+before the wheel's own rotation. </p>
+
+<p>So: for the cog on the floor, the axle moves in the Yaw axis,
+while the wheel turns in the Pitch axis. That's fine - Yaw comes
+before Pitch. The axle on the right-hand cogwheel moves in the
+Pitch axis, while its wheel is Rolling. That's fine too - Pitch
+comes before Roll. But for the broken cogwheel, the axle moves in
+the Pitch axis, while the cogwheel rotation is in the Yaw. And
+that's why it looks wrong; Half-Life applies Yaw before Pitch. </p>
+
+<p>I don't expect you to digest that the first time! But
+hopefully, now, if you find you have problems with multiple-axis
+rotations, you'll have some idea how to fix it. </p>
+
+<p>One important note - MoveWith entities are also affected by
+this limitation. So, imagine that you made the axle and the wheel
+as seperate entities which each rotated around just one axis, and
+you told the wheel to MoveWith the axle. This would produce
+almost exactly the same effect as the Axis Multipliers did. The
+left-hand wheel would still look wrong. (This problem may
+possibly be fixed in a future release.) </p>
+
+<p><a name="Customizing_Monsters"></a> </p>
+
+<h2>Customizing Monsters</h2>
+
+<p>Spirit offers you many ways to change the appearance and
+behaviour of your monsters. For instance, every monster has a
+&quot;Health&quot; field which determines how tough it is. (Note
+that on Easy mode, monsters are usually less tough than they are
+on Hard mode. The Health value overrides that, so that the
+monster will be equally tough on all skill levels. If you don't
+like that, you could make two different monsters, and use the new
+Skill setting to have one of them appear only in Hard mode, and
+the other one appear the rest of the time.) </p>
+
+<p>In a similar vein, all monsters now have a &quot;Scale&quot;
+setting - 1.0 is normal scale, and higher numbers make them
+bigger. With a small offset like 1.1 or 0.95, you can subtly
+adjust your monsters so they're no longer exactly the same height
+- they'll look a little less like clones. with a large offset
+like 2 or 0.1, you can create new &quot;super zombies&quot; who
+tower over the player, or decorate your level with &quot;toy
+soldiers&quot;. Note that this setting won't change the actual
+size of a monster, just how big they &quot;look&quot;. (As it
+happens, though, monster_generic also has an option to change its
+size.) This setting can be changed dynamically, using an
+env_render. If you want, it can even make monsters grow or shrink
+over time. </p>
+
+<p>Another new feature is the &quot;Behaves As&quot; field. This
+changes the monster's alignment; for example, you could make a
+grunt who's &quot;reliving Nam&quot; and attacks everyone,
+including the other soldiers; or maybe a &quot;strong-minded
+scientist&quot;, who's been turned into a Zombie but is refusing
+to attack the other scientists. Note that this doesn't change the
+monster's actions (for instance, that zombie will always shamble
+around, and attack its enemies with its claws) - it just changes
+who its enemies are. </p>
+
+<p>To accompany this field there's a Reaction to Player option,
+which lets you override the above behaviour. For example, you can
+make a barney who's joined the military - so he shoots scientists
+- but still won't attack the player. </p>
+
+<p>To change the appearance of a monster, you can use its Model
+field. Be careful when using this, though - you can't just give a
+Zombie model to a Barney and expect it to work. You'll find it
+can walk around, and will talk to you (in a Barney's voice), but
+that's about it. It will still drop a pistol when it dies.
+Basically, this can only be used for cosmetic changes -
+reskinning a monster, or changing the appearance of its weapons.
+Tied into this is a new option on monster_barney; the Weapons
+field, where by popular demand, you can tell him to use the .357
+handgun instead of his normal pistol. This changes the gun's
+sound effects, the amount of damage, and the weapon he drops when
+he dies. Unfortunately the one thing it doesn't change is his
+appearance; there's no &quot;Barney with 357&quot; model provided
+with Spirit. To use it, you'll have to make your own, and use the
+Model field to set it. (If someone has a &quot;Barney with
+357&quot; model that they'd like to provide, please let me know -
+I would be delighted to include it in the next release. With
+credits, of course.) </p>
+
+<p>Another interesting option is the &quot;Speak As&quot; field,
+which only applies to Barneys and Scientists. This is for use
+with the sentences.txt file, where a Barney's sentences all start
+with the prefix &quot;BA&quot;, and a Scientist's sentences all
+start with &quot;SC&quot;. The value you type into the Speak As
+field will be used as a replacement for this prefix; so for
+example, typing SC into a Barney's Speak As field will make him
+talk like a scientist, and BA in a Scientist's Speak As field
+will make him talk like a Barney. Needless to say, this isn't
+very useful as it stands; a Barney asking &quot;who ate all the
+donuts?&quot; may be amusing, but not especially interesting. The
+main purpose of the Speak As field is for modmakers who want to
+create their own sentence groups, creating unique NPCs with their
+own voices. For example, if you edit sentences.txt, copy all the
+&quot;BA&quot; sentences, rename them from &quot;BA&quot; to
+&quot;BB&quot;, and provide your own sound files to use for each
+one, you can then tell a Barney to Speak As &quot;BB&quot;, and
+he'll have a different voice. </p>
+
+<p>Monster_barney and monster_human_grunt now have a &quot;Don't
+drop gun&quot; flag. It's fairly self-explanatory - when they
+die, they won't drop the gun they're carrying. This allows you to
+make a non-combatant mod, for example, where the player doesn't
+actually do any fighting himself. Approaching this from the other
+direction, monster_alien_grunt now has a &quot;Drop gun&quot;
+flag, so that when it dies it'll drop its hornet gun, which the
+player can then pick up. </p>
+
+<p>Most of the above settings can also be adjusted dynamically
+(i.e. changed half-way through a level), by triggering an
+env_customize entity. It basically works like an env_render,
+except that it has a lot more options. Don't get intimidated - in
+a newly-created one, most of the options are set to &quot;No
+change&quot;. Simply set up the fields that you're interested in,
+and ignore the rest. </p>
+
+<p>Good news for people who like embedding their monsters in
+walls - you can now tick the &quot;No Yellow Blobs&quot; flag, so
+that Half-Life won't surround them with that annoying cloud of,
+er, yellow blobs. </p>
+
+<p>One last thing to note about monsters - in Spirit, a monster
+on an elevator will look fine. The ugly flickering bug has been
+fixed. </p>
+
+<p><a name="Triggering_Things"></a> </p>
+
+<h2>Triggering Things</h2>
+
+<p>Spirit offers you many many new options for triggering things.
+The most useful one is that you can put + or - at the beginning
+of a trigger field, to trigger something &quot;on&quot; or
+&quot;off&quot;, instead of just toggling it. The On/Off concept
+is in normal Half-Life, too - it's usually done with a
+trigger_relay - but isn't very widely used or supported. In
+particular, func_door and func_button never responded to it in a
+useful way. In Spirit, though, these entities both have an
+&quot;On/Off Aware&quot; field. When this field is set to
+&quot;yes&quot;, triggering &quot;on&quot; will always open the
+door/press the button, and triggering &quot;off&quot; will always
+close the door/unpress the button. </p>
+
+<p>Other features: when debugging your levels, it's sometimes
+useful to trigger entities manually. You can bring down the
+console and type type &quot;fire&quot; to trigger the entity
+you're looking at; or type &quot;fire flargle&quot; to trigger
+all entities named flargle. (&quot;fire +flargle&quot; and
+&quot;fire -flargle&quot; will also work, triggering flargle on
+and off respectively.) </p>
+
+<p>Approaching this idea from the opposite direction, it's also
+possible to automatically activate console commands in response
+to a trigger during your maps. See the trigger_command and
+trigger_changecvar entities. (Note that trigger_command is able
+to set cvars too - the advantage of trigger_changecvar is just
+that it gives you a &quot;duration&quot; setting, so that it's
+easier to control.) </p>
+
+<p>There are also many new features that can be useful when
+triggering things... </p>
+
+<p><a name="env_state"></a> </p>
+
+<h3>env_state:</h3>
+
+<p>env_state is a nice, versatile entity. At its most basic, it
+acts as an alternator; When you trigger it for the first time, it
+turns on and fires one target. The next time you trigger it, it
+turns off and fires a different target. Triggering it
+&quot;on&quot; and &quot;off&quot; will also work as you might
+expect. If you tell it to turn on when it's already on, nothing
+will happen. </p>
+
+<p>Another ability of an env_state is that it can take time to
+turn on and off. This is very handy when (for example) the player
+has to stand in an area for a set amount of time. When he enters
+the area, trigger an env_state &quot;on&quot;, so that it starts
+turning on. And when this time has elapsed, the env_state
+triggers the exit door, so that the player can progress onwards.
+If the player leaves before the timer is finished, though, the
+env_state will get triggered again, turning it off and
+interrupting the countdown. To get through, the player will have
+to come back and stand there for the full time period again.
+(Example level: RealRetinalScanner) </p>
+
+<p><a name="Triggering_momentary_doors:"></a> </p>
+
+<h3>Triggering momentary doors:</h3>
+
+<p>Amongst many other things, trigger_relay now has the ability
+to send a Ratio. Choose &quot;ratio&quot; from the Trigger To
+Send menu, and then specify the ratio you want to actually send,
+underneath. When this is set, the trigger_relay pretends to be a
+momentary_button, telling the target momentary_door where it
+needs to go to. So for example, sending the ratio 0 will tell the
+door to close; sending 0.5 will tell it to open halfway, and
+sending 1 will tell it to completely open. This is useful as a
+reset button - when the player has messed up a puzzle, you can
+move all the momentary doors back to their start positions. </p>
+
+<p><a name="Repeating_sequences_of_triggers:"></a> </p>
+
+<h3>Repeating sequences of triggers:</h3>
+
+<p>Multi_manager now has a &quot;loop&quot; flag, which allows
+you to trigger the same sequence of actions repeatedly. (This is
+primarily for special effects; for example, set up the manager to
+trigger a bunch of env_beams on and off, and tell it to loop, and
+they will then flicker on and off indefinitely. Or tell it to
+trigger some ambient_generics, and they will play in a repeated
+sequence.) </p>
+
+<p>Once a multi_manager has started looping, you can trigger it
+again to turn it off, interrupting the sequence. (This is
+sometimes what you want for a non-looping manager, too; in this
+case I recommend telling the manager to loop, but to turn itself
+off as the last action in its sequence.) </p>
+
+<p><a name="Triggering_at_random:"></a> </p>
+
+<h3>Triggering at random:</h3>
+
+<p>There are many new randomization options available, also in
+the multi_manager. </p>
+
+<p>Firstly, there's a &quot;Max Time offset&quot; field, for when
+you want to do something at a random time. If this is set, the
+manager will randomly choose a length of time between the Time
+Offset and the Max Time Offset, and wait that long before
+starting the sequence. The biggest new addition is the Mode
+value. This gives you two new randomisation modes - &quot;Choose
+one&quot;, and &quot;% chance for each&quot;. </p>
+
+<ul>
+    <li>In &quot;Choose one&quot; mode, the manager will choose
+        one of its targets and fire that, using the value for
+        each trigger as a weighting, not as a delay. So for
+        example, suppose you tell it to fire A with weight
+        &quot;10&quot;, B with weight &quot;90&quot;, and C with
+        weight &quot;100&quot;; the manager then has a 50% chance
+        of firing C, a 45% chance of firing B, and a 5% chance of
+        firing A. It will always fire exactly one of them. </li>
+    <li>In &quot;% chance&quot; mode, by contrast, the manager
+        may fire some, all, or none of its targets. For each one,
+        the value you give is a percentage chance that that
+        target gets fired. So in the example above, it would have
+        a 10% chance of firing A, a 90% chance of firing B, and
+        it would always fire C. (So that's an 81% chance of
+        triggering B and C, a 9% chance of just triggering C, a
+        9% chance of triggering all of them, and a 1% chance of
+        triggering A and C.) </li>
+</ul>
+
+<dl>
+    <dd><i>Note that the manager doesn't use its values as time
+        delays when you use these modes - it will usually fire
+        its targets as soon as you trigger it. (If you need to
+        have a delay, though, the Time Offset value will still
+        work.)</i> </dd>
+</dl>
+
+<p><a name="trigger_inout"></a> </p>
+
+<h3>trigger_inout</h3>
+
+<p>The trigger_inout is one of the most useful new entities in
+Spirit. It's similar to a trigger_multiple (it triggers something
+each time a player walks through it) but the difference is that
+while a player is standing there, it won't keep triggering. It
+only triggers when somebody walks in, and when somebody leaves. </p>
+
+<p><a name="trigger_onsight"></a> </p>
+
+<h3>trigger_onsight</h3>
+
+<p>In some respects a trigger_onsight is like a trigger_inout;
+when the player moves into the right place, something gets
+triggered. When he leaves, something else gets triggered. The
+difference is that a trigger_onsight is a point entity, and the
+&quot;right place&quot; is any place where the player can see it.
+If the player is facing the other way, or is behind a wall, or is
+too far away (and yes, you get to decide how far away that is)
+then it won't trigger. </p>
+
+<p>So for example, you could use this to make a more realistic
+retinal scanner. (This effect is used in RetinalScannerDemo.bsp,
+for example.) </p>
+
+<p><a name="Special_Effects"></a> </p>
+
+<h2>Special Effects</h2>
+
+<p>Everyone wants to make impressive special effects in their
+levels, right? Well, Spirit lets you do... lots of new things. </p>
+
+<p>New triggered effects: These all act like env_explosion - you
+trigger them, and you get a special effect wherever the entity
+is. </p>
+
+<ul>
+    <li><b>env_shockwave</b>: Basically, this lets you make the
+        effect you get when a houndeye attacks. Not all the
+        parameters work perfectly, but with some tweaking you can
+        make nice water ripple effects this way. </li>
+    <li><b>env_quakefx</b>: Nothing to do with earthquakes.
+        (Sorry about that.) This lets you produce various
+        different particle explosion effects. They were
+        originally part of Quake, but the Half-Life engine is
+        based on the Quake engine, so we can still play with
+        them. </li>
+    <li><b>env_decal</b>: Yes, you can make static decals using
+        the Worldcraft decal tool, and you can even give them a
+        name so that they appear when you tell them to. But this
+        entity can make decals whenever and wherever you want.
+        For example, you could make it movewith a train, so that
+        decals appear wherever the train is. </li>
+    <li><b>env_warpball</b>: Makes the green &quot;teleport
+        ball&quot; effect seen throughout half-life. They did it
+        with a complicated arrangement of beams and sound
+        effects, you can do it with one entity. </li>
+    <li><b>env_dlight</b>: Dynamically creates a patch of light.
+        Essentially, this looks like the player's flashlight, and
+        has the same limitations - if you light up a monster's
+        feet, the entire monster will be lit. Putting a dlight on
+        a monster's head won't actually affect that monster's
+        appearance in any way. </li>
+    <li><b>env_elight</b>: Dynamically creates a patch of light
+        which only lights up models. This is a very pretty effect
+        - it actually lights up models properly, like the muzzle
+        flash on the player's weapons does. However, it doesn't
+        have any effect on the walls, so it's probably not
+        suitable for use as a flashlight. Note that this can also
+        attach itself to an entity, so it'll move as that entity
+        moves. </li>
+</ul>
+
+<p>Other new entities include env_fog, which is a much-requested
+way to make a distance-fogging effect. Essentially this entity is
+used like an env_fade - you'd trigger the env_fog entity to make
+fog appear, and then trigger it again if you want to get rid of
+it. (Note that since this is a pretty old game we're mapping for,
+the fog is just a global fadeout effect - you can't make a patch
+of low-lying fog on the ground. Also, to get this fogging effect,
+you must be running the game in OpenGL mode. These are both
+fundamental limitations in the engine, so please don't ask me to
+change them.) env_fog is used in the SpiritDemo level. </p>
+
+<p><br>
+<b><i>env_rain</i></b> provides a rain effect, just as it sounds.
+It's a brush entity: to use it, you need to provide a volume for
+the rain to cover. (This can only be a cube. Don't bother making
+a more complex shape, because only its bounding box will be
+used.) The effect works by choosing a random point on the top
+surface of your cube, tracing it down to the bottom of your cube,
+and drawing a beam between the two points. If you specify an
+angle, then that angle will be used as the direction for the
+trace. (NB: this means that your beams may actually hit the
+ground outside the cube.) Yes, in other words the rain effect is
+just a bunch of beams. It looks almost exactly like the rain
+effect seen in mods like They Hunger... but to set that up, you
+needed hundreds of beams to be set up manually, whereas env_rain
+is just one entity which does it all for you. By default,
+env_rain will make its beams shift around randomly. Some people
+like this effect, others don't - so if you don't want it, simply
+set the &quot;Time between updates&quot; to 0. Other options:
+since it's just a bunch of beams, you can change which sprite you
+want the beams to use. So for example, you could use this to make
+a randomized lightning effect. Another option would be to make
+the beams extend horizontally (use the &quot;Beam Direction&quot;
+field), and tell them to use the laser beam sprite, to simulate
+some kind of high-tech security barrier. There's also a cryptic
+field called &quot;Extent type&quot;; this lets you define how
+the beams are traced. Choosing &quot;obstructable&quot; will mean
+that when a line is traced from the top to the bottom of the
+cube, the line will stop as soon as it hits a solid object. In
+other words, your rain will no longer fall through solid objects.
+&quot;Reverse obstructable&quot; is the same, except that the
+line is traced upwards. So the rain beams will all be visible at
+floor level, but they'll stop at the first obstacle above them.
+&quot;Arcing&quot; is like &quot;obstructable&quot;, except that
+a beam will only be drawn if it hits an obstacle. If it reaches
+the bottom of your env_rain cube without hitting anything, the
+beam won't appear. And &quot;reverse arcing&quot;, as you can
+probably guess, is like &quot;Arcing&quot; - except that the
+lines are traced upwards. env_rain is used in the SpiritDemo
+example level. </p>
+
+<p><br>
+There are also many changes to existing entities. env_render is
+now able to make objects fade in and out, instead of suddenly
+changing their appearance. It can adjust the scale of a sprite or
+model in the same way, which lets you (for example) make a smoke
+effect that gradually spreads out and disappears, or a monster
+that &quot;mutates&quot;, growing to twice its normal size. </p>
+
+<p>A new renderfx setting, &quot;Reflection&quot;, has also been
+added. It only works on monsters; as seen in the ShinyFloorDemo
+example level, it basically creates a reflection under the
+monster's feet. The effect is a little limited, and doesn't look
+quite perfect yet - but nevertheless, it's rather nice. </p>
+
+<p><br>
+<b><i>env_beam</i></b> now has the option &quot;Draw solid&quot;,
+so that you can make a beam that looks like a rope. (This feature
+is used in the GarageDoorDemo and SpiritDemo example levels.) You
+can also make a beam that triggers something when a player walks
+into it, as simulated in many Half-Life levels. While we're on
+the topic of env_beams, note that info_target now has a &quot;use
+null.spr&quot; flag. Normally, if you make an env_beam attached
+to an info_target, and tell that target to move around, the beam
+won't move. Tick &quot;use null.spr&quot; to get around that. (If
+you're interested: the problem, basically, is that a beam can
+only move around if it's attached to an entity that has a model
+or a sprite. If you tick the &quot;use null.spr&quot; flag on an
+info_target, then you're telling it to use the null.spr sprite,
+which is just a transparent box. So the player won't actually see
+any difference, except that an env_beam will now be able to
+follow it properly.) </p>
+
+<p><br>
+<b><i>env_fade</i></b> now has a &quot;Permanent&quot; flag,
+which means the fadeout will last forever. (Or until you trigger
+another env_fade to change it back.) </p>
+
+<p><br>
+<b><i>env_sprite</i></b> can now attach itself to an entity, at
+any attachment point. So for example, if you want barney's gun to
+act like a torch, then one part of the effect could be to make a
+flare sprite at his gun's attachment point. </p>
+
+<p><br>
+<b><i>env_laser</i></b> has always been very useful, one of the
+few ways to make a moving sprite or a moving damage source.
+Spirit gives it a whole new range of features. You can specify
+exactly what its beam will be blocked by (windows, monsters, or
+just walls), and also specify whether the beam should actually
+stop when it reaches the target position. So for example, you
+could build a helicopter, make an env_laser which MovesWith it,
+and set the laser's target position to be the middle of a window.
+Tell the laser not to stop at its endpint, and as the helicopter
+flies around, the laser will always shine through the middle of
+the window, and into the room beyond. To go with this, you can
+now make a laser which is &quot;interpolated&quot;. When a normal
+laser moves, it tends to look a little jerky. If you make it
+interpolated, then although the beam will lag slightly, it will
+look much smoother. Other new features: you can give a laser a
+start sprite as well as an end sprite. And if you want, for each
+of those entries you can tell it the name of the env_sprite
+entity you want it to use, instead of just giving it a sprite
+filename. This allows you customize the sprites on the laser
+beam: you're not limited to just using the render settings of the
+laser. Also, note that since you've now given your end sprite a
+name, it would be possible for other entities to refer to it. For
+example, you could have a light_glow entity Moving With your end
+sprite, or an env_explosion that creates explosions there. </p>
+
+<p><br>
+Spirit gives even the humble light entity a raft of new features.
+For a start, it now has a concept of &quot;how long it takes to
+turn on/off&quot;, and you can specify the lightstyle for it to
+use while it's doing so. So for example, you can make a light
+which takes a few seconds to turn on, and uses the
+&quot;fluorescent flicker&quot; lightstyle while it's doing so -
+one of those lights which takes a few seconds to warm up. More
+interesting, the trigger_lightstyle entity allows you to change
+the current lightstyle of any light, regardless of whether it's
+currently on or off. (It's probably best not to mix these
+features on the same light - either use trigger_lightstyle
+entities to control it, or else trigger the light to turn on and
+off, but not both). Note also that trigger_lightstyle includes a
+&quot;fade time&quot; option, so that your lights can fade in and
+out over whatever time you specify. This is easier to control
+than if you'd typed &quot;abcdefghijklm&quot; in your light's
+appearance; it also tends to work more reliably. </p>
+
+<p><br>
+Using the compile tools that come with Spirit, you also have the
+option to make texture lights that switch on and off - every
+func_whatever entity has a new &quot;Texlight style&quot; value,
+which will control the appearance of that entity's light-emitting
+surfaces. For more details, see the readme file for the compile
+tools. </p>
+
+<p><a name="Masters_and_States"></a> </p>
+
+<h2>Masters and States</h2>
+
+<p>In Spirit of Half-Life, every entity has a State. Some, like
+trigger_relays, are boring - they're always Off. Others, such as
+env_sprites and func_trains, change from On to Off when
+triggered. A few are more complex; for instance, func_rotating
+will be Off while it's stationary, Turning On while it's
+accelerating, On while it's at full speed, and Turning Off while
+it's slowing down. Similarly a func_door will be Off while it's
+closed, Turning On while it's opening, On while it's open, and
+Turning Off while it's closing. A func_button works the same way-
+it's normally Off, but it's On while it's pushed in, and when it
+moves it's Turning On or Turning Off. Finally, some less obvious
+examples: A multi_manager is On if it's in the process of
+triggering things, and it'll be Turning On if it's active but
+hasn't fired the first trigger yet. A scripted_sequence is
+Turning On while the monster is walking into position, and On
+when the animation is playing. And a trigger_inout is On while
+there's somebody standing in it, and Off the rest of the time. </p>
+
+<p><b>So, how is this useful?</b> </p>
+
+<p>Well, as you probably know, an entity with a Master value is
+unusable until the master becomes active. For example, you can
+lock a door by giving it a master, and then unlock it by
+triggering the master. Normally in Half-Life only the multisource
+entity can be used as a master. </p>
+
+<p>In Spirit of Half-Life, though, you can make any entity a
+Master, and its State will be used to determine whether it's
+locked or not. When the master is On, it's unlocked; the rest of
+the time, it's locked. (To a master, Turning On and Turning Off
+are the same as Off.) So for instance, this could be used to make
+a time-based lock: a door with a button as its master. The player
+has to press the button, and then run to the door before the
+button resets itself. </p>
+
+<p>Another useful feature: you can put a ~ (tilde) at the
+beginning of any Master field, to reverse the relationship. The
+door would then refuse to open when the button was pushed in, but
+would open quite happily the rest of the time. </p>
+
+<p><b>State-related entities:</b> </p>
+
+<ul>
+    <li>watcher: </li>
+</ul>
+
+<p>As you might think, a watcher is designed to watch another
+entity. Specifically, it watches for when the entity's state
+changes. When the entity is in the state you specify, the watcher
+itself will be On. The rest of the time, the watcher is Off. </p>
+
+<p>One of the main uses for a watcher is to trigger things. For
+example, you could have a watcher that watched a func_door for
+&quot;Turning On&quot; and &quot;Turning Off&quot;, and then tell
+the watcher to trigger an ambient_generic whenever it changed
+state. The sound effect would play while the door was opening and
+closing. </p>
+
+<p>Another use for it is as a master which doesn't only care
+about the On state. For example, you could have a watcher that
+watched a func_rotating for the states &quot;On&quot; and
+&quot;Turning On&quot;. If you then create a door with the
+watcher as its master, that door will only open while the fan is
+accelerating or is at full speed. But if you referred to the
+func_rotating directly, it would only open while the fan was at
+full speed. Which isn't always what you want. </p>
+
+<ul>
+    <li>multi_watcher: </li>
+</ul>
+
+<p>As the name suggests, a multi_watcher is a watcher that can
+watch more than one entity at a time. This means it does mostly
+the same thing as a multisource, except that it's more versatile.
+You set up a multi_watcher like a multi_manager: turn off
+SmartEdit and list the entities you want it to watch. (If several
+entities have the same name, it will watch all of them). It
+doesn't matter what values you give to the new keys you add this
+way; just leave them all at 0. </p>
+
+<p>So for example, suppose you have three buttons which must all
+be pressed in order for a door to open. Create a multi_watcher,
+select &quot;AND&quot; mode, then turn off SmartEdit and add the
+names of the three buttons to it. Then, name the multi_watcher as
+the master of your door. </p>
+
+<ul>
+    <li>watcher_count: </li>
+</ul>
+
+<p>The watcher_count entity is similar to the watcher entity
+except it will count the number of entities that are 'on' and
+fire its targets depending on how the count compares to various
+values you specify. </p>
+
+<p><a name="The_Locus_System"></a> </p>
+
+<h2>The Locus System</h2>
+
+<p>The Locus system is a relatively new feature, introduced in
+Spirit 0.7. It's quite complex, and so far a lot of people seem
+to have trouble understanding it (due, no doubt, to the almost
+negligible documentation - which hopefully is now more helpful).
+If you still don't get it after reading this section, please ask.
+And if you can think of a better way to explain this stuff,
+please let me know! </p>
+
+<p>The system is essentially two seperate features - a special
+value &quot;*locus&quot;, and a set of calc_ entities. Each can
+be useful on its own - but combined, they form a weapon of
+incomparable power, able to level mountains with a single blow.
+Or... maybe that was something else. </p>
+
+<p>The value *locus: When you're making a Spirit level in
+Worldcraft, you'll see that some entities have fields marked with
+an &quot;[LE]&quot;. These are fields where you'd usually write
+an entity's name. (For example, the &quot;Target to affect
+[LE]&quot; value for an env_render). What the suffix tells you is
+that instead of typing a name, you may type &quot;*locus&quot;
+into that field. The field will then refer to the current Locus
+Entity, not something called *locus. </p>
+
+<p>&quot;But what's the current Locus Entity?&quot; </p>
+
+<p>I'm glad you asked me that. In Half-Life, there's a
+rarely-used concept of &quot;who caused a trigger to be
+activated&quot;. Usually, this is a player. (If you've used the
+&quot;Targeting: Activator&quot; setting on a func_mortar_field,
+or the &quot;Activator Only&quot; flag on env_fade, then you
+probably have some idea what I'm talking about.) Essentially it
+works like this - if a player presses a button to open a door,
+the button will tell the door who it was pressed by. Equally,
+when a trigger_multiple gets activated, it will tell its target
+who walked into it. </p>
+
+<p>And the Locus Entity? That's just my word for
+&quot;activator&quot;. When you tell an entity to affect
+&quot;*locus&quot;, you're telling it to affect whoever caused it
+to be triggered. Example: an obvious use for this would be in a
+multiplayer level, to make a special invisibility powerup. Have a
+trigger_once which targets an env_render, and tell the env_render
+to affect &quot;*locus&quot;. The first player who walks into the
+trigger will then be the &quot;locus&quot; of your env_render,
+and it will make him invisible. </p>
+
+<p>Handy, yes? I'm just getting started... </p>
+
+<p>The Locus can also be preserved throughout a sequence of
+triggers. For example, if a button targets a trigger_relay, and
+the trigger_relay targets a door, that door will still be told
+which player pressed the button. Even more useful, a
+multi_manager can do the same thing. Example: What if you only
+wanted your invisibility powerup to last 20 seconds? No problem!
+Simply get your trigger_once to target a multi_manager, and make
+your manager target two env_renders - one at time 0, the other at
+time 20. Each env_render would target *locus - which would be the
+player, as before. </p>
+
+<p>The Locus isn't always a player. For example, if you make a
+trigger that goes off when a monster walks into it, then that
+monster will be used as the locus. So you could get it to trigger
+a scripted_sequence which affects &quot;*locus&quot;, for
+example. Now, when any monster walks into this area, that monster
+will perform a particular animation. </p>
+
+<p>Useful though this ability is, sometimes it's not quite what
+you want to do. For example, if you've ever made a multi-floor
+lift in Half-Life, you'll know how tedious it is to make a load
+of different trigger_changetarget entities. Wouldn't it be nice
+to just make one trigger_changetarget, and tell it what to affect
+each time you trigger it? Well (surprise, surprise) you can do
+this with the Locus system, too. </p>
+
+<p>When you trigger an entity, you can specify which entity you
+want it to use as a locus, by writing that entity's name in
+brackets. (Sort of like a function call in a computer program.)
+This will replace the normal locus that would have been used. So,
+in the trigger_changetarget example, you might call your
+trigger_changetarget &quot;moveto&quot;, and tell it to affect
+your train, setting its new target to &quot;*locus&quot;. When a
+player presses the call button for the first floor, you would
+then make it trigger &quot;moveto(firstfloor)&quot; - so instead
+of making the train target the player, the train will target the
+path_corner you've called firstfloor. Yeah, this one isn't the
+most impressive feature in the world - but it's handy and it can
+save a bit of copy-and-pasting. Note that typing
+&quot;blah(*locus)&quot; will usually give you exactly the same
+results as just typing &quot;blah&quot;. </p>
+
+<p>And finally, some triggers use their own special locus. For
+example, the &quot;Fire on spawn (locus = shot)&quot; field on an
+env_shooter. As the name suggests, the entity you specify here
+will be triggered every time the env_shooter launches a new shot.
+The locus for that trigger will be the newly-created shot entity.
+So if your &quot;fire on spawn&quot; entity is an env_render, it
+can make the shots start to fade out as they appear. Or you could
+target a trigger_relay, so that they'll fade out after a certain
+delay. I'm sure you can think of loads of other uses. </p>
+
+<p><a name="The_calc__entities:"></a> </p>
+
+<h3>The calc_ entities:</h3>
+
+<p>The [LE] suffix isn't the only one you'll see - [LP], [LR] and
+[LV] also exist. These are closely related to [LE], but more
+specialised. </p>
+
+<p><br>
+</p>
+
+<p><a name="Locus_Position_.5BLP.5D:"></a> </p>
+
+<h3>Locus Position [LP]:</h3>
+
+<p>This suffix appears on fields where you're asked to specify a
+position, instead of an entity to affect. For example, the
+&quot;Initial Position [LP]&quot; field on an env_explosion. By
+specifying the name of an entity in this field, you'd cause the
+explosion to appear wherever that entity was. (If you give the
+name of a brush entity, the explosion would appear at its origin
+brush.) </p>
+
+<p>Now, if you want, you can use this as a substitute for
+MoveWith. Instead of telling your env_explosion to MoveWith a
+train, you just tell it to create the explosion wherever the
+train happens to be. (This may seem pretty pointless, but it does
+work for entities that you can't MoveWith. For example, you could
+make an explosion centred on a monster.) </p>
+
+<p>This approach has limitations, however. For example, if you
+make an explosion over a monster, it will appear at the monster's
+origin - which for most monsters, is at its feet. Needless to
+say, this isn't very useful if you want to simulate the monster's
+head exploding. </p>
+
+<p>This is where the calc_position entity comes in. Suppose you
+create a calc_position entity called &quot;scihead&quot;. You
+give it the name of a monster_scientist entity, and you tell it
+that its &quot;Position to calculate&quot; is his
+&quot;eyes&quot;. And instead of telling your env_explosion to
+appear at the monster_scientist, you now tell it to appear at
+&quot;scihead&quot;. Ta-daa! Einstein's head explodes, instead of
+his feet. (See example level: migrainedemo.bsp) </p>
+
+<p>Essentially, calc_position lets you tailor your special
+effects to appear exactly where you want them. </p>
+
+<p><br>
+</p>
+
+<p><a name="Locus_Ratio_.5BLR.5D:"></a> </p>
+
+<h3>Locus Ratio [LR]:</h3>
+
+<p>This suffix appears on fields which ask you to specify a scale
+factor. For example, the &quot;Gib Speed Factor&quot; field on an
+env_shooter. Locus Ratio fields are a little limited at the
+moment, but there are three different kinds of ratio you might
+want to refer to... </p>
+
+<p>If you put the name of a momentary_door or momentary_button in
+one of these fields, you'll get a ratio that shows how far open
+the door is/how far pressed the button is. Fully open/pressed is
+1.0, fully closed is 0.0, and half-way, well... I'm sure you can
+guess. If you put the name of a monster (including the player) in
+one of these fields, you'll get a ratio that shows how healthy it
+is: 1.0 for full health, 0.0 for dead. If you put the name of a
+func_recharge or func_healthcharge entity in one of these fields,
+you'll get a ratio that shows how much charge it has left. 1.0
+means it's fully charged, and 0.0 means empty. And predictably,
+there's also a calc_ratio entity. This allows you to multiply or
+add ratios together, cap them to a maximum value, and other
+options. </p>
+
+<p>If you're having trouble understanding this idea, h </p>
+
+<p>The Locus Ratio feature will be developed further in future
+versions of Spirit. </p>
+
+<p><br>
+</p>
+
+<p><a
+name="Locus_Velocity_.5BLV.5D:_.28or_Locus_Vector.2C_if_you_prefer..29"></a>
+</p>
+
+<h3>Locus Velocity [LV]: (or Locus Vector, if you prefer.)</h3>
+
+<p>This suffix appears on fields where you're asked to specify a
+velocity, an angle and/or a distance. For example, the &quot;At
+Velocity [LV]&quot; field on an env_shooter. By naming a
+particular entity in this field, you'd cause your shots to be
+fired with the same velocity as that entity. </p>
+
+<p>[LV] is not only used to set the speed of an object. For
+example, there's an [LV] field which can tells an env_laser what
+direction to fire in, and how far its beam should extend. This is
+set up in exactly the same way as setting a velocity; if you tell
+the env_laser to use the velocity of a particular entity, it will
+extend in the direction the entity is travelling, and will cover
+the distance that entity would travel in 0.1 seconds. </p>
+
+<p>As you can probably guess, that doesn't happen very much.
+Unlike Locus Position fields, it's very rare to use a Locus
+Velocity field without making it refer to a calc_velocity entity.
+Reflecting this, there are actually three different calc_velocity
+entities available - calc_subvelocity, calc_velocity_path, and
+calc_velocity_polar. I won't go into much detail here, but
+essentially subvelocity is used when you want to refer to a
+property of an entity (e.g. the direction it's facing), while
+velocity_path is used when you want something to travel from one
+position to another. Velocity_polar is used to adjust other
+velocities, by rotating them or scaling them. </p>
+
+<p>So, what can we do with all this? You could make an
+env_shooter which refers to a calc_subvelocity and a
+calc_position, so that it will shoot gibs from the player's head,
+in the direction he's facing. (It's not every day that a mod lets
+you simulate projectile vomiting, is it?) Alternatively, you
+could use a calc_velocity_path, to make the gibs shoot towards
+another object. Another alternative would be to have an env_laser
+that refers to a calc_subvelocity, so that it shines out ahead of
+the player like a flashlight beam. (See example level:
+headlightdemo.bsp. No, I'm afraid it's not very pretty. I leave
+that to you...) </p>
+
+<p>The combo: You can also write &quot;*locus&quot; in any [LP],
+[LV] or [LR] field. This works as you might expect - it tells
+your entity to use the position or velocity of the locus. This is
+very useful, and allows you to make some quite sophisticated
+particle effects, and other things. </p>
+
+<p>As a starting point, consider the &quot;Trigger on firing
+(locus = barrel)&quot; field on a func_tank. The entity you
+specify here will be triggered every time the tank fires. The
+locus will be a reference point that's positioned at the tank's
+barrel, with its velocity pointing outwards from the end. (Please
+don't do anything silly like killtargetting the reference point.)
+Suppose you make this field target an env_shooter, and tell it to
+create its shots at the position *locus, with a velocity of
+*locus. Essentially, you've just made a func_tank that will
+launch anything you want when it fires. </p>
+
+<p>Not excited yet? How about the &quot;Trigger when hit (locus =
+position)&quot; field on a func_breakable? Whenever you shoot the
+func_breakable, this entity will be triggered. The locus will be
+a reference point that's positioned where the shot hit, with its
+velocity pointing in the direction the bullet went. So, what you
+can do with this? Make it target an env_decal entity, and create
+your own customized bulletholes in your func_breakable? Nah, not
+exciting enough. How about targetting a locus_beam entity, so
+that beams of light shine out of the bullethole? Or targetting an
+env_shooter, to make water pour out of the hole? </p>
+
+<p>Another idea: The &quot;Fire on collision (locus = shot)&quot;
+field on env_shooter is triggered whenever a shot hits something.
+You could use it to make a splash effect when a water drop hits
+the ground, or to killtarget the shot. (Try writing
+&quot;*locus&quot; in the &quot;killtarget&quot; field of a
+trigger_relay.) </p>
+
+<p>A lot of these ideas are explored in LocusDemo.bsp, and
+GatlingGunDemo also makes use of some calc_ entities. I hope this
+taster has given you enough inspiration to try the Locus system
+out. And to complain to me about all the bugs in it. </p>
+
+<p><a name="The_HEV_suit_and_the_Player"></a> </p>
+
+<h2>The HEV suit and the Player</h2>
+
+<p>Mapmakers often want the player to start the game with an HEV
+suit, without that tiresome logon speech. To do so, simply tick
+the &quot;Start with HEV&quot; checkbox on your info_player_start
+entity. (There's also an &quot;HEV from start&quot; option in the
+Map Properties menu, which will do the same thing). </p>
+
+<p>You can now make a scripted_sentence which sounds like the
+player's HEV suit is talking. Simply leave the sentence's
+&quot;Target Monster&quot; field blank. If you want the player to
+lose his HEV suit (for part of your storyline, presumably), then
+that's one of the many many options that have been added to
+player_weaponstrip. </p>
+
+<p>Other things you can now do to the player: the player_freeze
+entity, as seen in opposing force (the initial helicopter ride)
+allows you to... well... stop the player moving. He'll also be
+unable to shoot, select weapons, or use his flashlight - but note
+that he can still look around. If you want to completely disable
+player control, you'll have to use a trigger_camera. </p>
+
+<p>If you want to change the player's footstep sounds, you can
+use the entity env_footsteps. It's most useful when combined with
+a trigger_inout; simply place the trigger_inout over the area
+where the sounds should be different, and make it target the
+env_footsteps whenever a player enters or leaves it. </p>
+
+<p>To change the player's HUD colour, you use the command
+&quot;hud_color R G B&quot;. (without the quotes). For example,
+&quot;hud_color 255 0 0&quot; will give you a bright red hud.
+Note that this means you can change hud colour during the game,
+too, using a trigger_command entity. </p>
+
+<p>And in general, if you want anything to affect or refer to the
+player, you can do so using the special value
+&quot;*player&quot;. (So if you wanted to use an an env_render to
+make the player glow, you would write &quot;*player&quot; in its
+&quot;entity to affect&quot; field. And yes, this will mean a
+glow effect appears over the player's weapon on his screen. But,
+NB: only the 'glow' renderfx setting is transferred over to the
+weapon this way. I'm not sure why...) </p>
+
+<p>The &quot;Skill settings&quot; field, found on monsters and
+most items, allows you to set up entities to not appear on
+certain skill levels - just like the skill settings in Quake. To
+test your game on a particular skill level, you may find it
+useful to use the command-line parameters &quot;+skill 1&quot;
+(for Easy mode) or &quot;+skill 3&quot; (for hard mode). </p>
+
+<p><a name="Scripted_Sequences"></a> </p>
+
+<h2>Scripted Sequences</h2>
+
+<p>One of Half-Life's greatest selling points has always been its
+scripted sequences. But did you ever find there were little
+niggling things that didn't let you do quite what you wanted...? </p>
+
+<p>The scripted_sequence entity now has a &quot;Turn Type&quot;
+field, separate from its &quot;Move Type&quot;. The monster will
+usually walk/run/do nothing according to its movetype, and then
+will do nothing/turn to face a particular direction, according to
+its turntype. So you could make a sequence where a monster simply
+walks to a particular point, without caring what direction he's
+facing at the end of it. Or you can make a sequence where a
+monster simply turns to face the centre of the room, regardless
+of where he is right now. </p>
+
+<p>In normal HL, a scripted_sequence doesn't work when playing a
+death animation - the monster will get up again straight
+afterwards, and it just looks silly. The &quot;Monster dies&quot;
+flag will override this behaviour, so that those monsters stay
+dead. Note that if you play a non-death animation this way, the
+monster will end up frozen in whatever pose the animation
+finished with. </p>
+
+<p>The scripted_action entity lets you tell a monster to fire its
+weapons. You can always make it simply fire - but if you want to
+make it fire at a specific point, you have two options. </p>
+
+<ol>
+    <li>. Set the &quot;Turn Type&quot; to &quot;Turn to
+        face&quot;, and specify an &quot;Entity to attack&quot;.
+        This will make the monster face the entity you specified,
+        and fire directly at it. </li>
+    <li>. Set the &quot;Turn Type&quot; to &quot;Turn to
+        face&quot;, and set the &quot;Move Type&quot; to &quot;No
+        - Only turn&quot;. This will make the monster face your
+        scripted_action entity, and fire directly at it. </li>
+</ol>
+
+<p>Sometimes a full-on script isn't very useful, because it's not
+flexible enough. For example, you might want a monster to shoot
+at a particular object... but not if he can't see it, and not if
+he's in the middle of a fight. The monster_target entity is handy
+for that sort of thing. Monsters will treat a monster_target as
+another monster (of whatever type you specify), and will
+automatically attack it using their normal AI. A nice way to use
+this is to put a monster_target right next to a func_breakable,
+so that when they try to attack it, they'll hit the
+func_breakable instead. When you want them to stop attacking
+(i.e. when the func_breakable breaks), trigger the monster_target
+to turn it off. </p>
+
+<p>In a similar vein, trigger_startpatrol allows you to
+&quot;suggest&quot; to a monster that it should walk along the
+specified line of path_corner entities. If it's in the middle of
+a fight, it'll ignore this suggestion - and unlike a
+scripted_sequence, it'll also stop walking the path when it sees
+an enemy. (This is used in the MigraineDemo level.) </p>
+
+<p>monster_generic now has a heap of new options. If you've ever
+tried to make a monster_generic whose model is meant to be used
+by a player, then you'll know how the player model sinks into the
+floor up to its waist. Tick the &quot;Player Model&quot; flag so
+that it works correctly. Spirit also lets you control the initial
+health, blood color and gib models for the monster_generic to
+use. </p>
+
+<p>monster_generic_dead is a new entity which, as the name
+suggests, lets you put any monster's dead body into a map. Want
+to make zombie corpses or dead alien controllers? This entity
+actually has a huge range of options in it, and supports a lot of
+&quot;death poses&quot; that the entities like
+monster_barney_dead doesn't let you use... so you might even want
+to use monster_generic_dead in preference to the more specialised
+entities. </p>
+
+<p>Retrieved from the now defunct whiteplasma.com</p>
+
+<p>Based on the features list by Laurie Cheers, and greatly
+expanded on by ytiAdmin (?) and possibly others.</p>
+
+<p>Edited for inclusion with SoHL 1.5a4 by Firebinder (2007
+August 15)</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>
