@@ -1,0 +1,38 @@
+Switchable TexLights 0.5
+
+By Laurie Cheers, 07/10/2002
+
+The versions of hlcsg and hlrad in this zip file are based on Merl's half-life tools. Modified with permission.
+
+--- Version History ---
+0.2:
+Made it so that if the mapper provided a TL@blah light, hlcsg didn't automatically create one.
+
+0.3:
+Reinstated the original directlight calculations from ZHLT
+Adjusted it so TL@blah lights will emit with custom style "i". Seems to make them roughly
+the same brightness as a normal texlight.
+Fixed one crashing bug, which happened when a weirdly-shaped face didn't have any patches.
+
+0.4:
+No changes were made. You don't want to sell me death-sticks. You want to go home and rethink your life.
+
+0.5
+Changed the TL@ prefix to tl@, so that you can target it with a multi_manager.
+-----------------------
+
+
+These tools allow you to make flickering/pulsing texlights in your levels. Simply create any func_ entity with texture lights on it, and select the flicker style you want from the "Texlight Style" setting.
+
+If you want to make a switchable texlight, that's a tiny bit more complex:
+Give your func_ entity a name, and choose the "Switch with TL@name" setting. When your map is compiled, a light entity called tl@blah will automatically be created, where blah is the name you gave your func_ entity. When you want to turn your texlights on and off, simply trigger tl@blah.
+
+(So for example, in the demo level there's a func_wall called "glow". When a button is pressed, it triggers "tl@glow" to turn the light on and off.)
+
+New in version 0.2: If you create a light that's actually named tl@blah, you hlcsg won't automatically create
+another one. This allows you to control the properties of the texlight. Its main use is that you can specify
+a "custom appearance" for the texlight. For example, see the func_breakable in the demo level.
+
+
+
+Hope you enjoy it!

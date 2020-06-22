@@ -1,0 +1,417 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title></title>
+</head>
+
+<body bgcolor="#444444" text="#FFD030" link="#F0F0A0"
+vlink="#A0A080">
+
+<p><font size="5"><strong>Documentation - ZHLT 2.5.3 Custom Build
+1.6</strong> </font></p>
+
+<p>This is a custom build of Zoner's Half-Life Tools, version
+2.5.3. Sean (aka &quot;Zoner&quot;) is NOT responsible for the
+tools in this zip. The purpose of this document is to highlight
+the differences between the generic ZHLT 2.5.3 and this version,
+and also to serve as a usage manual. </p>
+
+<p>Revised 03/06/`02 Anthony Moore</p>
+
+<p><font color="#EEEEEE">Thanks goes to the following individuals
+for their contribution, be it with suggestions, criticism or beta
+testing: Zipster, Merkaba, Laurie, Mazemaster, Who? Me?, hullu
+&amp; the </font><a href="http://www.natural-selection.org"><font
+color="#EEEEEE">Natural Selection</font></a><font color="#EEEEEE">
+team</font> </p>
+
+<p>If you are unsure of anything in here, try posting in the
+forums at the <a
+href="http://www.chatbear.com/cgi-bin/board.pl?boardid=390">Valve-ERC</a>
+or <a href="http://forums.gamedesign.net/">RUST</a> and get one
+of the regulars to give you a hand. As a last resort, you can
+also <a
+href="mailto:merlinis@bigpond.net.au?subject=zhlt 2.5.3 custom build 1.6.1">contact
+me</a> via e-mail.</p>
+
+<p>Earlier versions of these tools are available <a
+href="http://moore.lorikeet.id.au/nulltex/">here</a>. </p>
+
+<p>Contents of this file: </p>
+
+<ul type="square">
+    <li><a href="#1">the null texture</a> </li>
+    <li><a href="#2">automatic wad detection</a> </li>
+    <li><a href="#3">clipnode economy mode</a> </li>
+    <li><a href="#4">sky diffuse colour</a> </li>
+    <li><a href="#5">texture wad configuration file</a> </li>
+    <li><a href="#6">info_compile_parameters map entity</a> </li>
+    <li><a href="#8">info_texlights map entity</a> </li>
+    <li><a href="#7">max vis distance</a> </li>
+</ul>
+
+<p><font size="4"><strong>the null texture</strong></font></p>
+
+<p>The <code>NULL</code> texture is one that is removed from the
+map during compilation, so that it won't exist when you play the
+compiled .bsp file in Half-Life. You should be able to apply it
+to any entity or world brush within your map.</p>
+
+<p>The main point of this texture is to use it on faces that the
+player would under normal circumstances <b>never</b> see, so that
+those faces will not add to the w_poly count and lower the fps
+(frames per second) rate. You can also use the <code>SKY</code>
+texture for this exact same purpose, although there have been
+recent debates about whether this is actually beneficial. While
+it does lower the w_poly count, it apparently also lowers the fps
+rate, thereby defeating its original purpose. </p>
+
+<p><font color="#EEEEEE">If you wish to use the <code>NULL</code>
+texture, make sure that you extract <code>zhlt.wad</code> from
+this zip to some directory, and add it to your texture wad
+configuration in Worldcraft (goto Tools, Options... and click on
+the Textures tab, then click on Add).</font> </p>
+
+<p><font size="4"><strong>automatic wad detection</strong></font></p>
+
+<p>Automatic wad detection is a simple utility that will exclude
+any wadfiles from the bsp that aren't in use by the map. </p>
+
+<p>This gives you, the mapper, the potential to add any
+assortment of wadfiles you wish, and yet only have those that are
+actually used by the map included in the .bsp file. </p>
+
+<p><font color="#EEEEEE">If you wish to enable this feature,
+simply use the <code>-wadautodetect</code> flag in the hlcsg
+commandline.</font> </p>
+
+<p><font size="4"><strong>clipnode economy mode</strong></font></p>
+
+<p><font color="#EEEEEE">This 'mode' is on by default in hlcsg,
+and does not require any interaction from the user at all. You
+can remain blissfully ignorant of this feature if you so wish. </font></p>
+
+<p>Clipnodes are 'planes' that restrict the player movement. They
+are placed along the walls and floors of your level, so that they
+player cannot pass though them. However, like everything else in
+the Half-Life universe, they are limited, and will max out with
+compile errors if you end up using too many of them. </p>
+
+<p>In this build of the tools, hlcsg will analyse how the
+clipnodes are being used in your map. If it thinks that it can
+get away with <b>not</b> using clipnodes in any particular
+situation (such as in func_illusionaries which don't need
+clipnodes), then hlcsg will strip them away from the level. This
+means that by default, your clipnode counts will be lower than
+normal. However, <b>it doesn't</b> automatically mean that you
+will never see another MAX_MAP_CLIPNODES error in your life, it
+just means it's less likely to happen in the first place. </p>
+
+<p><font color="#EEEEEE">If you believe that this feature is
+causing you troubles, than you have the option of turning it off.
+To do so, simply add the <code>-noclipeconomy</code> flag to the
+hlcsg commandline.</font> </p>
+
+<p><font size="4"><strong>sky diffuse colour </strong></font></p>
+
+<p><font color="#EEEEEE">Really horrible HLRAD hack by Adam
+Foster</font><br>
+<br>
+It's a hack to HLRAD that allows a different colour for the
+diffuse light from a light_environment, more accurately mimicking
+real-world lighting (yellow sun, blue sky).<br>
+<br>
+It uses a new key, '_diffuse_light', in the light_environment -
+this gives the colour and intensity of the diffuse lighting, ie
+light from the sky, not from the sun.<br>
+<br>
+It should be fully backwards-compatible with older maps - if
+there's no '_diffuse_light' key, it uses the intensity from the
+standard '_light' key.<br>
+<br>
+Hope somebody finds it useful...<br>
+<br>
+- Adam Foster <a href="mailto:afoster@compsoc.man.ac.uk">afoster@compsoc.man.ac.uk</a><br>
+&nbsp; <br>
+</p>
+
+<p><font size="4"><strong>texture wad configuration file</strong></font></p>
+
+<p><b>Release Information</b><br>
+<font color="#EEEEEE">The texture wad configuration file, called <b>wad.cfg</b>
+should be extracted to the same directory as the compile tools,
+or your Half-Life directory.</font> </p>
+
+<p><b>Whats the purpose of this feature?</b><br>
+Say, you map for 3 mods: Counter-Strike, TFC, and normal
+Half-Life Single Player. All three of these mods use different
+wads. Say you wanted to work on your Counter-Strike map one day,
+and TFC the next: because Worldcraft does not store which wad
+files are in use for each game configuration, you would need to
+go into Worldcraft texture configuration, Add/Remove wad files
+from the list, and Restart Worldcraft. </p>
+
+<p>The idealistic solution to this would be to make it so that
+Worldcraft stores which wad files are in use for any given game
+configuration, but that's not as easy as it would first appear.
+autolycus of the Valve-ERC states that &quot;<i>This is one of
+the most requested things, so yes, we know about it. I've
+requested the feature several times. You can be assured, Mr.
+Speyrer knows that this would be a handy thing.</i>&quot;. </p>
+
+<p><b>The solution</b><br>
+So, for the mean time, I have devised up this method to overcome
+the hassle of restarting Worldcraft. In the <code>wad.cfg</code>
+file, you can explicitly define what wads you want written into
+the .bsp file, regardless of what happens to be in Worldcraft,
+for any given game configuration. So, now, hlcsg will ignore the
+wads that you have configured in Worldcraft, and instead only
+write in the ones you specify. </p>
+
+<p>The specific syntax for the file is the following:</p>
+
+<blockquote>
+    <p><font color="#3399CC" face="courier new">configuration_name</font><font
+    face="courier new"><br>
+    {<br>
+    </font><font color="#FF6633" face="courier new">c:\path\to\wad\wad1.wad</font><font
+    face="courier new"><br>
+    </font><font color="#FF6633" face="courier new">c:\path\to\wad\wad2.wad</font><font
+    face="courier new"><br>
+    </font><font color="#FFCC66" face="courier new">include
+    c:\path\to\wad\wad3.wad</font><font face="courier new"><br>
+    } </font></p>
+</blockquote>
+
+<p>Where: </p>
+
+<ul>
+    <li><font color="#3399CC" face="courier new">configuration_name</font>
+        is some sort of descriptive word. Examples: <i>valve</i>,
+        <i>cs</i>, <i>tfc</i> etc... </li>
+    <li><font color="#FF6633" face="courier new">c:\path\to\wad\wad<i>n</i>.wad</font>
+        is the full path to a texture wad file. if you are unsure
+        as to what this should be, take a look at the paths in
+        the Textures tab in Worldcraft configuration. </li>
+    <li>If a wad is prefixed by <font color="#FFCC66"
+        face="courier new">include</font>, that wad will be
+        automatically wadincluded into the .bsp file. </li>
+    <li>There is no limit to the number of configurations, or the
+        number of wads you can have per configuration. </li>
+</ul>
+
+<p>All that remains now is for me to run hlcsg.exe with the
+parameter <font color="#EEEEEE"><code>-wadconfig
+configuration_name</code></font>. </p>
+
+<p>Lets take an example. Say i wanted to create a configuration
+called 'my_wads'. It has 3 standard wadfiles in it:
+'halflife.wad', 'liquids.wad' and 'xeno.wad', all of which can be
+found in the valve directory, because they all came with
+Half-Life. It also has a custom wad created by me called
+'mywad.wad', which I want to compile into the .bsp file, which
+also happens to be in the valve directory. My configuration might
+look something like this: </p>
+
+<blockquote>
+    <p><font color="#3399CC" face="courier new">my_wads</font><font
+    face="courier new"><br>
+    {<br>
+    </font><font color="#FF6633" face="courier new">C:\Sierra\Half-Life\valve\halflife.wad</font><font
+    face="courier new"><br>
+    </font><font color="#FF6633" face="courier new">C:\Sierra\Half-Life\valve\liquids.wad</font><font
+    face="courier new"><br>
+    </font><font color="#FF6633" face="courier new">C:\Sierra\Half-Life\valve\xeno.wad</font><font
+    face="courier new"><br>
+    </font><font color="#FFCC66" face="courier new">include
+    C:\Sierra\Half-Life\valve\mywad.wad</font><font
+    face="courier new"><br>
+    } </font></p>
+</blockquote>
+
+<p>Now, when i run hlcsg.exe when i compile my map, i put <font
+color="#EEEEEE"><code>-wadconfig my_wads</code></font> in the
+command line. </p>
+
+<p><font color="#EEEEEE">If you really don't understand the
+wad.cfg file syntax, then don't worry. You don't have to use it.</font>
+However, it does come with some example configurations already in
+it; just open it in notepad and see if you can get the hang of
+it, because it can be quite handy. </p>
+
+<p>&nbsp;</p>
+
+<p><font size="4"><strong>info_compile_parameters</strong></font></p>
+
+<p>This is a simple little point-based entity that you can place
+in your map, from which you can select standard compile settings
+instead of using the command line switches.<br>
+<br>
+If you use the -verbose flag (or even set Verbose Compile
+Messages to On in the entity!), the tool will print out its usage
+settings from the info_compile_parameters entity.<br>
+<br>
+If your .fgd file does not have this entity in it, you can add
+the following code to the end of your .fgd (compatible with all
+versions of Worldcraft):<br>
+</p>
+
+<pre>
+@PointClass size(-8 -8 0, 8 8 32) = info_compile_parameters : &quot;Compile Options&quot; 
+[ 
+    texdata(string) : &quot;Texture Data Memory (in KB)&quot; : &quot;4096&quot; 
+    estimate(choices) : &quot;Estimate Compile Times?&quot; : 0 = 
+    [ 
+        0: &quot;Yes&quot; 
+        1: &quot;No&quot; 
+    ] 
+    bounce(integer) : &quot;Number of radiosity bounces&quot; : 0 
+    ambient(string) : &quot;Ambient world light (0.0 to 1.0, R G B)&quot; : &quot;0 0 0&quot; 
+    smooth(integer) : &quot;Smoothing threshold (in degrees)&quot; : 0 
+    dscale(integer) : &quot;Direct Lighting Scale&quot; : 1 
+    chop(integer) : &quot;Chop Size&quot; : 64 
+    texchop(integer) : &quot;Texture Light Chop Size&quot; : 32 
+    hullfile(string) : &quot;Custom Hullfile&quot; 
+
+    priority(choices) : &quot;Priority Level&quot; : 0 =
+    [
+        0 : &quot;Normal&quot;
+        1 : &quot;High&quot;
+        -1 : &quot;Low&quot;
+    ]
+    wadautodetect(choices) : &quot;Wad Auto Detect&quot; : 0 =
+    [
+        0 : &quot;Off&quot;
+        1 : &quot;On&quot;
+    ]
+    wadconfig(string) : &quot;Custom Wad Configuration&quot; : &quot;&quot;
+    verbose(choices) : &quot;Verbose compile messages&quot; : 0 =
+    [
+        0 : &quot;Off&quot;
+        1 : &quot;On&quot;
+    ]
+    noclipeconomy(choices) : &quot;Strip Uneeded Clipnodes?&quot; : 1 = 
+    [
+        1 : &quot;Yes&quot;
+        0 : &quot;No&quot;
+    ]
+
+    spawnflags(flags) = 
+    [ 
+        1 : &quot;Run CSG&quot; : 1 
+        2 : &quot; No Clip&quot; : 0 
+        4 : &quot; Only Ents&quot; : 0 
+        8 : &quot; No Sky Clip&quot; : 0 
+        32 : &quot;Run BSP&quot; : 1 
+        64 : &quot; Leak Only&quot; : 0 
+        128 : &quot; No Clip&quot; : 0 
+        256 : &quot;Run VIS&quot; : 1 
+        512 : &quot; Fast &quot; : 0 
+        2048 : &quot;Run RAD&quot; : 1 
+        4096 : &quot; Sparse &quot; : 0 
+        8192 : &quot; Circus Mode&quot; : 0 
+        16384 : &quot; Extra Mode &quot; : 0 
+    ] 
+]    </pre>
+
+<p>info_texlights map entity</p>
+
+<p>The <font color="#EEEEEE">info_texlights</font> entity can act
+as a replacement for a lights.rad file, in that it simply resides
+within the map as a point based entity. The usefulness of this is
+that each map can have its own unique ambient lighting applied to
+it, and those settings will travel with the map and not affect
+any other maps.<br>
+<br>
+Usage of the entity is much like that of the multimanager. To add
+an entry, take smart-edit off in Worldcraft and add key value
+pairs in manually; the key should contain the name of the texture
+to apply lighting to, and the value a set of numbers representing
+the red green blue lumionsity(brightness) of the texture, just as
+you would in the lights.rad file.<br>
+<br>
+Notes: The presence of this file will not override the
+lights.rad, both the values specified in this entity and the
+lights.rad file will be used by hlrad. Thanks goes out to Laurie
+Cheers from the <a href="http://spirit.valve-erc.com/">Spirit of
+Half-Life</a> mod for the idea behind this entity.<br>
+<br>
+If your .fgd does not contain an info_texlights entity, then you
+can add this line of code to your .fgd yourself: </p>
+
+<pre>@PointClass color(255 128 0) = info_texlights : &quot;Texture Light Config&quot; []</pre>
+
+<p><font size="4"><strong>Pulsing/Flickering texlights</strong></font></p>
+
+<p>All texlights can now pulse and flicker, like normal light
+entities can. To use this feature, set the 'style' value on the
+brush entity with the light texture. <br>
+If your .fgd doesn't include style values, add the following code
+to each entity that needs flickering texlights: </p>
+
+<pre>	style(choices) : &quot;Texlight style&quot; : 0 =
+	[
+		0 : &quot;Normal&quot;
+		10: &quot;Fluorescent flicker&quot;
+		2 : &quot;Slow, strong pulse&quot;
+		11: &quot;Slow pulse, noblack&quot;
+		5 : &quot;Gentle pulse&quot;
+		1 : &quot;Flicker A&quot;
+		6 : &quot;Flicker B&quot;
+		3 : &quot;Candle A&quot;
+		7 : &quot;Candle B&quot;
+		8 : &quot;Candle C&quot;
+		4 : &quot;Fast strobe&quot;
+		9 : &quot;Slow strobe&quot;
+		12: &quot;Underwater&quot;
+	]</pre>
+
+<p><br>
+</p>
+
+<p><font size="4"><strong>max vis distance</strong></font></p>
+
+<p><font color="#EEEEEE">Maximum Distance Visibility (MDV)</font>
+is a new feature that prevents leafs beyond a certain distance
+from being rendered (or even sent to the renderer at all). In
+conjunction with fog, it can become the ultimate catalyst when
+building and compiling large maps, especially those with open
+areas. However, due to the nature of the calculations, not all
+leaves beyond a certain distance are guaranteed to be prevented
+from being rendered; but those that are within the maximum
+distance are gauranteed to be rendered.<br>
+<br>
+To use this feature, include the <font color="#EEEEEE"><code>-maxdistance
+#</code></font> parameter with your hlvis command line, where <font
+color="#EEEEEE"><code>#</code></font> is the maximum distance in
+units. <br>
+<br>
+There is a small side effect when using the Maximum Distance
+feature. hlrad relies heavily on the visibility matrix to speed
+up lighting operations. As such, a normal rad of the map will
+result in ackward, &quot;cut off&quot; lighting. This problem is
+easily solved, however it requires that you use Adam Foster's
+special version of hlrad, which accomodates for the MDV lighting
+problem. (ed. Note: The version of hlrad included in this release
+is the aforementioned hlrad.) When you use the <font
+color="#EEEEEE"><code>-maxdistance</code></font> parameter, an
+extra file named <code>&lt;mapname&gt;.vdt</code> that contains
+the real visibility matrix (i.e without any MDV performed) will
+be created. Adam's hlrad will use this file to correctly light
+the map. <br>
+<br>
+Skyler 'Zipster' York - (<a
+href="mailto:zipster89134@hotmail.com">zipster89134@hotmail.com</a>)<br>
+<br>
+<br>
+</p>
+
+<p align="right">this lovingly hand-crafted documentation is ©
+copyright <a href="mailto:merlinis@bigpond.net.au"
+style="font: 7pt; :hover font: 7pt;">Tony &quot;Merl&quot; Moore</a>
+2002</p>
+</body>
+</html>
