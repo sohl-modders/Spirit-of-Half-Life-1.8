@@ -189,6 +189,54 @@ private:
 //
 //-----------------------------------------------------
 //
+class CHudLensflare: public CHudBase
+{
+	public:
+		int Init( void );
+		int VidInit( void );
+		int Draw(float flTime);
+		int MsgFunc_Lensflare(const char *pszName, int iSize, void *pbuf);
+    
+		int SunEnabled;
+    
+	private:
+		int Sunanglex;
+		int Sunangley;
+    
+		int Sunadd[5];
+    
+		float flPlayerBlend;
+		float flPlayerBlend2;
+		float flPlayerBlend3;
+		float flPlayerBlend4;
+		float flPlayerBlend5;
+		float flPlayerBlend6;
+    
+		float Screenmx;
+		float Screenmy;
+    
+		float multi[10];
+    
+		int scale[10];
+    
+		int red[10];
+		int green[10];
+		int blue[10];
+    
+		char text[10];
+		float Lensx[10];
+		float Lensy[10];
+    
+		float Suncoordx;
+		float Suncoordy;
+    
+		float Sundistx;
+		float Sundisty;
+};
+
+//
+//-----------------------------------------------------
+//
 class CHudTrain: public CHudBase
 {
 public:
@@ -198,7 +246,7 @@ public:
 	int MsgFunc_Train(const char *pszName, int iSize, void *pbuf);
 
 private:
-	HSPRITE m_hSprite;
+	HL_HSPRITE m_hSprite;
 	int m_iPos;
 
 };
@@ -258,41 +306,6 @@ protected:
 	// an array of colors...one color for each line
 	float *m_pflNameColors[MAX_STATUSBAR_LINES];
 };
-
-//
-//-----------------------------------------------------
-//
-// REMOVED: Vgui has replaced this.
-//
-/*
-class CHudScoreboard: public CHudBase
-{
-public:
-	int Init( void );
-	void InitHUDData( void );
-	int VidInit( void );
-	int Draw( float flTime );
-	int DrawPlayers( int xoffset, float listslot, int nameoffset = 0, char *team = NULL ); // returns the ypos where it finishes drawing
-	void UserCmd_ShowScores( void );
-	void UserCmd_HideScores( void );
-	int MsgFunc_ScoreInfo( const char *pszName, int iSize, void *pbuf );
-	int MsgFunc_TeamInfo( const char *pszName, int iSize, void *pbuf );
-	int MsgFunc_TeamScore( const char *pszName, int iSize, void *pbuf );
-	void DeathMsg( int killer, int victim );
-
-	int m_iNumTeams;
-
-	int m_iLastKilledBy;
-	int m_fLastKillTime;
-	int m_iPlayerNum;
-	int m_iShowscoresHeld;
-
-	void GetAllPlayersInfo( void );
-private:
-	struct cvar_s *cl_showpacketloss;
-
-};
-*/
 
 struct extra_player_info_t
 {
@@ -393,8 +406,8 @@ public:
 	int MsgFunc_Battery(const char *pszName,  int iSize, void *pbuf );
 
 private:
-	HSPRITE m_hSprite1;
-	HSPRITE m_hSprite2;
+	HL_HSPRITE m_hSprite1;
+	HL_HSPRITE m_hSprite2;
 	wrect_t *m_prc1;
 	wrect_t *m_prc2;
 	int	  m_iBat;
@@ -417,9 +430,9 @@ public:
 	int MsgFunc_FlashBat(const char *pszName,  int iSize, void *pbuf );
 
 private:
-	HSPRITE m_hSprite1;
-	HSPRITE m_hSprite2;
-	HSPRITE m_hBeam;
+	HL_HSPRITE m_hSprite1;
+	HL_HSPRITE m_hSprite2;
+	HL_HSPRITE m_hBeam;
 	wrect_t *m_prc1;
 	wrect_t *m_prc2;
 	wrect_t *m_prcBeam;
@@ -543,7 +556,7 @@ private:
 	typedef struct
 	{
 		char szSpriteName[MAX_ICONSPRITENAME_LENGTH];
-		HSPRITE spr;
+		HL_HSPRITE spr;
 		wrect_t rc;
 		unsigned char r, g, b;
 	} icon_sprite_t;
@@ -564,7 +577,7 @@ class CShinySurface
 	float m_fMinX, m_fMinY, m_fMaxX, m_fMaxY, m_fZ;
 	char m_fScale;
 	float m_fAlpha; // texture scale and brighness
-	HSPRITE m_hsprSprite;
+	HL_HSPRITE m_hsprSprite;
 	char m_szSprite[128];
 
 public:
@@ -582,7 +595,6 @@ public:
 //
 //-----------------------------------------------------
 //
-
 
 //LRC - for the moment, skymode has only two settings
 #define SKY_OFF 0
@@ -602,7 +614,7 @@ class CHud
 {
 private:
 	HUDLIST						*m_pHudList;
-	HSPRITE						m_hsprLogo;
+	HL_HSPRITE						m_hsprLogo;
 	int							m_iLogo;
 	client_sprite_t				*m_pSpriteList;
 	int							m_iSpriteCount;
@@ -612,7 +624,7 @@ private:
 
 public:
 
-	HSPRITE						m_hsprCursor;
+	HL_HSPRITE						m_hsprCursor;
 	float m_flTime;	   // the current client time
 	float m_fOldTime;  // the time at which the HUD was last redrawn
 	double m_flTimeDelta; // the difference between flTime and fOldTime
@@ -648,13 +660,13 @@ public:
 private:
 	// the memory for these arrays are allocated in the first call to CHud::VidInit(), when the hud.txt and associated sprites are loaded.
 	// freed in ~CHud()
-	HSPRITE *m_rghSprites;	/*[HUD_SPRITE_COUNT]*/			// the sprites loaded from hud.txt
+	HL_HSPRITE *m_rghSprites;	/*[HUD_SPRITE_COUNT]*/			// the sprites loaded from hud.txt
 	wrect_t *m_rgrcRects;	/*[HUD_SPRITE_COUNT]*/
 	char *m_rgszSpriteNames; /*[HUD_SPRITE_COUNT][MAX_SPRITE_NAME_LENGTH]*/
 
 	struct cvar_s *default_fov;
 public:
-	HSPRITE GetSprite( int index )
+	HL_HSPRITE GetSprite( int index )
 	{
 		return (index < 0) ? 0 : m_rghSprites[index];
 	}
@@ -663,7 +675,6 @@ public:
 	{
 		return m_rgrcRects[index];
 	}
-
 
 	int GetSpriteIndex( const char *SpriteName );	// gets a sprite index, for use in the m_rghSprites[] array
 
@@ -683,6 +694,7 @@ public:
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
 	CHudParticle	m_Particle; // (LRC) -- 30/08/02 November235: Particles to Order
+	CHudLensflare   m_Lensflare;
 
 	void Init( void );
 	void VidInit( void );
