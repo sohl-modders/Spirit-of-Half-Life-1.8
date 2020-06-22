@@ -1,160 +1,102 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="7.10"
 	Name="cl_dll"
-	ProjectGUID="{FF985F5C-0317-42ED-8B0B-E602CF0E9534}"
-	TargetFrameworkVersion="131072"
-	>
+	SccProjectName="&quot;$/GoldSrc/cl_dll&quot;, HGEBAAAA"
+	SccLocalPath=".">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-				CommandLine="copy &quot;$(TargetDir)&quot;client.dll &quot;C:\games\half-life\spirit\cl_dlls\client.dll&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;client.dll &quot;C:\games\half-life\spirit\cl_dlls\client 1.8a1.dll&quot;&#x0D;&#x0A;"
-				Outputs="C:\games\half-life\spirit\cl_dlls\client.dll"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/cl_dll.tlb"
-				HeaderFileName=""
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				OptimizeForProcessor="1"
 				AdditionalIncludeDirectories="..\dlls,..\common,..\pm_shared,..\engine,..\utils\vgui\include,..\game_shared"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS"
 				RuntimeLibrary="1"
-				RuntimeTypeInfo="true"
-				UsePrecompiledHeader="0"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/cl_dll.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CompileAs="0"
-				DisableSpecificWarnings="4996;4005;4482"
-			/>
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
+				Name="VCCustomBuildTool"
+				CommandLine="copy &quot;$(TargetDir)&quot;client.dll &quot;C:\games\half-life\spirit\cl_dlls\client.dll&quot;"
+				Outputs="C:\games\half-life\spirit\cl_dlls\client.dll"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib ../utils/vgui/lib/win32_vc6/vgui.lib wsock32.lib opengl32.lib"
+				OutputFile=".\Debug\client.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile=".\Debug/client.pdb"
+				SubSystem="2"
+				ImportLibrary=".\Debug/client.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/cl_dll.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-			/>
+				Culture="1033"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib ../utils/vgui/lib/win32_vc6/vgui.lib wsock32.lib opengl32.lib ../common/cg/cg.lib ../common/cg/cgGL.lib"
-				OutputFile=".\Debug\client.dll"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/client.pdb"
-				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				ImportLibrary=".\Debug/client.lib"
-				TargetMachine="1"
-			/>
+				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCWebDeploymentTool"/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-				CommandLine="copy &quot;$(TargetDir)&quot;client.dll &quot;c:\games\half-life\spirit\cl_dlls\client1.8a1.dll&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;client.dll &quot;c:\games\half-life\spirit\cl_dlls\client.dll&quot;&#x0D;&#x0A;"
-				Outputs="c:\games\half-life\spirit\cl_dlls\client1.5a4.dll;c:\games\half-life\spirit\cl_dlls\client.dll"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/cl_dll.tlb"
-				HeaderFileName=""
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\utils\vgui\include,..\engine,..\common,..\pm_shared,..\dlls"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS"
-				StringPooling="true"
+				StringPooling="TRUE"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/cl_dll.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
@@ -162,56 +104,53 @@
 				BrowseInformation="1"
 				BrowseInformationFile=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="0"
-				DisableSpecificWarnings="4996;4005;4482"
-			/>
+				CompileAs="0"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"
+				CommandLine="copy &quot;$(TargetDir)&quot;client.dll &quot;c:\games\half-life\spirit\cl_dlls\client1.5a4.dll&quot;
+copy &quot;$(TargetDir)&quot;client.dll &quot;c:\games\half-life\spirit\cl_dlls\client.dll&quot;
+"
+				Outputs="c:\games\half-life\spirit\cl_dlls\client1.5a4.dll;c:\games\half-life\spirit\cl_dlls\client.dll"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="winmm.lib ../utils/vgui/lib/win32_vc6/vgui.lib wsock32.lib opengl32.lib ../common/cg/cg.lib ../common/cg/cgGL.lib"
 				OutputFile=".\Release\client.dll"
 				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				ProgramDatabaseFile=".\Release/client.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary=".\Release/client.lib"
-				TargetMachine="1"
-			/>
+				TargetMachine="1"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/cl_dll.tlb"
+				HeaderFileName=""/>
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
+				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -219,2541 +158,2050 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90"
-			>
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90">
 			<File
-				RelativePath="ammo.cpp"
-				>
+				RelativePath="ammo.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="ammo_secondary.cpp"
-				>
+				RelativePath="ammo_secondary.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="ammohistory.cpp"
-				>
+				RelativePath="ammohistory.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="battery.cpp"
-				>
+				RelativePath="battery.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="cdll_int.cpp"
-				>
+				RelativePath="cdll_int.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="com_weapons.cpp"
-				>
+				RelativePath="com_weapons.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="death.cpp"
-				>
+				RelativePath="death.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="demo.cpp"
-				>
+				RelativePath="demo.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="entity.cpp"
-				>
+				RelativePath="entity.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="ev_common.cpp"
-				>
+				RelativePath="ev_common.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="events.cpp"
-				>
+				RelativePath="events.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="flashlight.cpp"
-				>
+				RelativePath="flashlight.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="GameStudioModelRenderer.cpp"
-				>
+				RelativePath="GameStudioModelRenderer.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="geiger.cpp"
-				>
+				RelativePath="geiger.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="glow.cpp"
-				>
+				RelativePath="glow.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
-					>
+					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="health.cpp"
-				>
+				RelativePath="health.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="hud.cpp"
-				>
+				RelativePath="hud.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="hud_msg.cpp"
-				>
+				RelativePath="hud_msg.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="hud_redraw.cpp"
-				>
+				RelativePath="hud_redraw.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="hud_servers.cpp"
-				>
+				RelativePath="hud_servers.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="hud_spectator.cpp"
-				>
+				RelativePath="hud_spectator.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="hud_update.cpp"
-				>
+				RelativePath="hud_update.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="in_camera.cpp"
-				>
+				RelativePath="in_camera.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="input.cpp"
-				>
+				RelativePath="input.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="inputw32.cpp"
-				>
+				RelativePath="inputw32.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="menu.cpp"
-				>
+				RelativePath="menu.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="message.cpp"
-				>
+				RelativePath="message.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mp3.cpp"
-				>
+				RelativePath="mp3.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\overview.cpp"
-				>
+				RelativePath="overview.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="parsemsg.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					>
+					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="particlemgr.cpp"
-				>
+				RelativePath="parsemsg.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="particlemsg.cpp"
-				>
+				RelativePath="particlemgr.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="particlesys.cpp"
-				>
+				RelativePath="particlemsg.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_debug.c"
-				>
+				RelativePath="particlesys.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_math.c"
-				>
+				RelativePath="..\pm_shared\pm_debug.c">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_shared.c"
-				>
+				RelativePath="..\pm_shared\pm_math.c">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="rain.cpp"
-				>
+				RelativePath="..\pm_shared\pm_shared.c">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="saytext.cpp"
-				>
+				RelativePath="rain.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="status_icons.cpp"
-				>
+				RelativePath="saytext.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="statusbar.cpp"
-				>
+				RelativePath="status_icons.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="studio_util.cpp"
-				>
+				RelativePath="statusbar.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="StudioModelRenderer.cpp"
-				>
+				RelativePath="studio_util.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="text_message.cpp"
-				>
+				RelativePath="StudioModelRenderer.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="train.cpp"
-				>
+				RelativePath="text_message.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="tri.cpp"
-				>
+				RelativePath="train.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="util.cpp"
-				>
+				RelativePath="tri.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\game_shared\vgui_checkbutton2.cpp"
-				>
+				RelativePath="util.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_ClassMenu.cpp"
-				>
+				RelativePath="..\game_shared\vgui_checkbutton2.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_ConsolePanel.cpp"
-				>
+				RelativePath="vgui_ClassMenu.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_ControlConfigPanel.cpp"
-				>
+				RelativePath="vgui_ConsolePanel.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_CustomObjects.cpp"
-				>
+				RelativePath="vgui_ControlConfigPanel.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\game_shared\vgui_grid.cpp"
-				>
+				RelativePath="vgui_CustomObjects.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\game_shared\vgui_helpers.cpp"
-				>
+				RelativePath="..\game_shared\vgui_grid.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_int.cpp"
-				>
+				RelativePath="..\game_shared\vgui_helpers.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\game_shared\vgui_listbox.cpp"
-				>
+				RelativePath="vgui_int.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\game_shared\vgui_loadtga.cpp"
-				>
+				RelativePath="..\game_shared\vgui_listbox.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_MOTDWindow.cpp"
-				>
+				RelativePath="..\game_shared\vgui_loadtga.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_SchemeManager.cpp"
-				>
+				RelativePath="vgui_MOTDWindow.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_ScorePanel.cpp"
-				>
+				RelativePath="vgui_SchemeManager.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_ServerBrowser.cpp"
-				>
+				RelativePath="vgui_ScorePanel.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_SpectatorPanel.cpp"
-				>
+				RelativePath="vgui_ServerBrowser.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_TeamFortressViewport.cpp"
-				>
+				RelativePath="vgui_SpectatorPanel.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="vgui_teammenu.cpp"
-				>
+				RelativePath="vgui_TeamFortressViewport.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="view.cpp"
-				>
+				RelativePath="vgui_teammenu.cpp">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-						BrowseInformation="1"
-					/>
+						BrowseInformation="1"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="view.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
+						BrowseInformation="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="1"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
+						BrowseInformation="1"/>
 				</FileConfiguration>
 			</File>
 			<Filter
 				Name="hl"
-				Filter="*.CPP"
-				>
+				Filter="*.CPP">
 				<File
-					RelativePath="..\dlls\crossbow.cpp"
-					>
+					RelativePath="..\dlls\crossbow.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\crowbar.cpp"
-					>
+					RelativePath="..\dlls\crowbar.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="CustomMenu.cpp"
-					>
+					RelativePath="CustomMenu.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\egon.cpp"
-					>
+					RelativePath="..\dlls\egon.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="ev_hldm.cpp"
-					>
+					RelativePath="ev_hldm.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\gauss.cpp"
-					>
+					RelativePath="..\dlls\gauss.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\glock.cpp"
-					>
+					RelativePath="..\dlls\glock.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\handgrenade.cpp"
-					>
+					RelativePath="..\dlls\handgrenade.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="hl\hl_baseentity.cpp"
-					>
+					RelativePath="hl\hl_baseentity.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="hl\hl_events.cpp"
-					>
+					RelativePath="hl\hl_events.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="hl\hl_objects.cpp"
-					>
+					RelativePath="hl\hl_objects.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="hl\hl_weapons.cpp"
-					>
+					RelativePath="hl\hl_weapons.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\hornetgun.cpp"
-					>
+					RelativePath="..\dlls\hornetgun.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\common\interface.cpp"
-					>
+					RelativePath="..\common\interface.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\mp5.cpp"
-					>
+					RelativePath="..\dlls\mp5.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\python.cpp"
-					>
+					RelativePath="..\dlls\python.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\rpg.cpp"
-					>
+					RelativePath="..\dlls\rpg.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\satchel.cpp"
-					>
+					RelativePath="..\dlls\satchel.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\shotgun.cpp"
-					>
+					RelativePath="..\dlls\shotgun.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\squeakgrenade.cpp"
-					>
+					RelativePath="..\dlls\squeakgrenade.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\dlls\tripmine.cpp"
-					>
+					RelativePath="..\dlls\tripmine.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\game_shared\vgui_scrollbar2.cpp"
-					>
+					RelativePath="..\game_shared\vgui_scrollbar2.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\game_shared\vgui_slider2.cpp"
-					>
+					RelativePath="..\game_shared\vgui_slider2.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\game_shared\voice_banmgr.cpp"
-					>
+					RelativePath="..\game_shared\voice_banmgr.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\game_shared\voice_status.cpp"
-					>
+					RelativePath="..\game_shared\voice_status.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\game_shared\voice_vgui_tweakdlg.cpp"
-					>
+					RelativePath="..\game_shared\voice_vgui_tweakdlg.cpp">
 					<FileConfiguration
-						Name="Debug|Win32"
-						>
+						Name="Debug|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="_DEBUG;_MBCS;WIN32;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
-						>
+						Name="Release|Win32">
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="1"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;$(NoInherit)"
-							BrowseInformation="1"
-						/>
+							BrowseInformation="1"/>
 					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;fi;fd"
-			>
+			Filter="h;hpp;hxx;hm;inl;fi;fd">
 			<File
-				RelativePath="ammo.h"
-				>
+				RelativePath="ammo.h">
 			</File>
 			<File
-				RelativePath="ammohistory.h"
-				>
+				RelativePath="ammohistory.h">
 			</File>
 			<File
-				RelativePath="camera.h"
-				>
+				RelativePath="camera.h">
 			</File>
 			<File
-				RelativePath="cl_dll.h"
-				>
+				RelativePath="cl_dll.h">
 			</File>
 			<File
-				RelativePath="com_weapons.h"
-				>
+				RelativePath="com_weapons.h">
 			</File>
 			<File
-				RelativePath="demo.h"
-				>
+				RelativePath="demo.h">
 			</File>
 			<File
-				RelativePath="ev_hldm.h"
-				>
+				RelativePath="ev_hldm.h">
 			</File>
 			<File
-				RelativePath="eventscripts.h"
-				>
+				RelativePath="eventscripts.h">
 			</File>
 			<File
-				RelativePath="GameStudioModelRenderer.h"
-				>
+				RelativePath="GameStudioModelRenderer.h">
 			</File>
 			<File
-				RelativePath="health.h"
-				>
+				RelativePath="health.h">
 			</File>
 			<File
-				RelativePath="hud.h"
-				>
+				RelativePath="hud.h">
 			</File>
 			<File
-				RelativePath="hud_iface.h"
-				>
+				RelativePath="hud_iface.h">
 			</File>
 			<File
-				RelativePath="hud_servers.h"
-				>
+				RelativePath="hud_servers.h">
 			</File>
 			<File
-				RelativePath="hud_servers_priv.h"
-				>
+				RelativePath="hud_servers_priv.h">
 			</File>
 			<File
-				RelativePath="hud_spectator.h"
-				>
+				RelativePath="hud_spectator.h">
 			</File>
 			<File
-				RelativePath="in_defs.h"
-				>
+				RelativePath="in_defs.h">
 			</File>
 			<File
-				RelativePath="..\common\itrackeruser.h"
-				>
+				RelativePath="..\common\itrackeruser.h">
 			</File>
 			<File
-				RelativePath="kbutton.h"
-				>
+				RelativePath="kbutton.h">
 			</File>
 			<File
-				RelativePath="mp3.h"
-				>
+				RelativePath="mp3.h">
 			</File>
 			<File
-				RelativePath="overview.h"
-				>
+				RelativePath="overview.h">
 			</File>
 			<File
-				RelativePath="parsemsg.h"
-				>
+				RelativePath="parsemsg.h">
 			</File>
 			<File
-				RelativePath="particlemgr.h"
-				>
+				RelativePath="particlemgr.h">
 			</File>
 			<File
-				RelativePath="particlesys.h"
-				>
+				RelativePath="particlesys.h">
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_debug.h"
-				>
+				RelativePath="..\pm_shared\pm_debug.h">
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_defs.h"
-				>
+				RelativePath="..\pm_shared\pm_defs.h">
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_info.h"
-				>
+				RelativePath="..\pm_shared\pm_info.h">
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_materials.h"
-				>
+				RelativePath="..\pm_shared\pm_materials.h">
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_movevars.h"
-				>
+				RelativePath="..\pm_shared\pm_movevars.h">
 			</File>
 			<File
-				RelativePath="..\pm_shared\pm_shared.h"
-				>
+				RelativePath="..\pm_shared\pm_shared.h">
 			</File>
 			<File
-				RelativePath="studio_util.h"
-				>
+				RelativePath="studio_util.h">
 			</File>
 			<File
-				RelativePath="StudioModelRenderer.h"
-				>
+				RelativePath="StudioModelRenderer.h">
 			</File>
 			<File
-				RelativePath="util.h"
-				>
+				RelativePath="util.h">
 			</File>
 			<File
-				RelativePath="util_vector.h"
-				>
+				RelativePath="util_vector.h">
 			</File>
 			<File
-				RelativePath="vgui_ConsolePanel.h"
-				>
+				RelativePath="vgui_ConsolePanel.h">
 			</File>
 			<File
-				RelativePath="vgui_ControlConfigPanel.h"
-				>
+				RelativePath="vgui_ControlConfigPanel.h">
 			</File>
 			<File
-				RelativePath="vgui_int.h"
-				>
+				RelativePath="vgui_int.h">
 			</File>
 			<File
-				RelativePath="vgui_SchemeManager.h"
-				>
+				RelativePath="vgui_SchemeManager.h">
 			</File>
 			<File
-				RelativePath="vgui_ScorePanel.h"
-				>
+				RelativePath="vgui_ScorePanel.h">
 			</File>
 			<File
-				RelativePath="vgui_ServerBrowser.h"
-				>
+				RelativePath="vgui_ServerBrowser.h">
 			</File>
 			<File
-				RelativePath="vgui_SpectatorPanel.h"
-				>
+				RelativePath="vgui_SpectatorPanel.h">
 			</File>
 			<File
-				RelativePath="vgui_TeamFortressViewport.h"
-				>
+				RelativePath="vgui_TeamFortressViewport.h">
 			</File>
 			<File
-				RelativePath="view.h"
-				>
+				RelativePath="view.h">
 			</File>
 			<File
-				RelativePath="..\game_shared\voice_banmgr.h"
-				>
+				RelativePath="..\game_shared\voice_banmgr.h">
 			</File>
 			<File
-				RelativePath="..\game_shared\voice_status.h"
-				>
+				RelativePath="..\game_shared\voice_status.h">
 			</File>
 			<File
-				RelativePath="..\game_shared\voice_vgui_tweakdlg.h"
-				>
+				RelativePath="..\game_shared\voice_vgui_tweakdlg.h">
 			</File>
 			<File
-				RelativePath="wrect.h"
-				>
+				RelativePath="wrect.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
-			>
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe">
 		</Filter>
 	</Files>
 	<Globals>

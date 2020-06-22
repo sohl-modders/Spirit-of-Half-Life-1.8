@@ -469,8 +469,8 @@ void RenderScreenGlowLowEnd(void)
     DrawQuad(ScreenWidth, ScreenHeight);
 
     glEnable(GL_BLEND);
-
-    for (int i = 0; i < CVAR_GET_FLOAT("r_glowdark"); i++)
+	int i;
+    for ( i = 0; i < CVAR_GET_FLOAT("r_glowdark"); i++)
 		DrawQuad(ScreenWidth, ScreenHeight);
 
     glBindTexture(GL_TEXTURE_RECTANGLE_NV, g_uiGlowTex);

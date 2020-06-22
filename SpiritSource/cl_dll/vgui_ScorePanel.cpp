@@ -302,8 +302,10 @@ void ScorePanel::Update()
 //-----------------------------------------------------------------------------
 void ScorePanel::SortTeams()
 {
+	
+	int i;
 	// clear out team scores
-	for ( int i = 1; i <= m_iNumTeams; i++ )
+	for (  i = 1; i <= m_iNumTeams; i++ )
 	{
 		if ( !g_TeamInfo[i].scores_overriden )
 			g_TeamInfo[i].frags = g_TeamInfo[i].deaths = 0;
@@ -318,9 +320,9 @@ void ScorePanel::SortTeams()
 
 		if ( g_PlayerExtraInfo[i].teamname[0] == 0 )
 			continue; // skip over players who are not in a team
-
+		int j;
 		// find what team this player is in
-		for ( int j = 1; j <= m_iNumTeams; j++ )
+		for ( j = 1; j <= m_iNumTeams; j++ )
 		{
 			if ( !stricmp( g_PlayerExtraInfo[i].teamname, g_TeamInfo[j].name ) )
 				break;
@@ -461,8 +463,9 @@ void ScorePanel::SortPlayers( int iTeam, char *team )
 //-----------------------------------------------------------------------------
 void ScorePanel::RebuildTeams()
 {
+	int i;
 	// clear out player counts from teams
-	for ( int i = 1; i <= m_iNumTeams; i++ )
+	for ( i = 1; i <= m_iNumTeams; i++ )
 	{
 		g_TeamInfo[i].players = 0;
 	}
@@ -477,9 +480,9 @@ void ScorePanel::RebuildTeams()
 
 		if ( g_PlayerExtraInfo[i].teamname[0] == 0 )
 			continue; // skip over players who are not in a team
-
+		int j;
 		// is this player in an existing team?
-		for ( int j = 1; j <= m_iNumTeams; j++ )
+		for ( j = 1; j <= m_iNumTeams; j++ )
 		{
 			if ( g_TeamInfo[j].name[0] == '\0' )
 				break;
@@ -491,7 +494,7 @@ void ScorePanel::RebuildTeams()
 		if ( j > m_iNumTeams )
 		{ // they aren't in a listed team, so make a new one
 			// search through for an empty team slot
-			for ( int j = 1; j <= m_iNumTeams; j++ )
+			for ( j = 1; j <= m_iNumTeams; j++ )
 			{
 				if ( g_TeamInfo[j].name[0] == '\0' )
 					break;
@@ -540,8 +543,8 @@ void ScorePanel::FillGrid()
 	}
 
 	bool bNextRowIsGap = false;
-
-	for(int row=0; row < NUM_ROWS; row++)
+	int row;
+	for(row=0; row < NUM_ROWS; row++)
 	{
 		CGrid *pGridRow = &m_PlayerGrids[row];
 		pGridRow->SetRowUnderline(0, false, 0, 0, 0, 0, 0);
