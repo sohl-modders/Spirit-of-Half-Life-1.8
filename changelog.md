@@ -464,7 +464,7 @@ comparing SOHL 1.6 (commit `135144a`) with SOHL 1.8 (commit `0f60f63`).
 |-------|-----|-----|
 | `game` | "SoHL:Custom Build" | "Spirit of Half-Life" |
 | `url_info` | shamteam.cbi.ru | spirit.valve-erc.com |
-| `version` | "1.6" | "1.2" |
+| `version` | "1.6" | "1.2" *(likely an error in the original — should be "1.8")* |
 | `startmap` | "weathdemo" | "ParticleTest" |
 | `trainmap` | "mirrordemo" | "ShinyWaterTest" |
 | `gamedll` | "cl_dlls/server.dll" | "dlls/spirit.dll" |
